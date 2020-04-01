@@ -8,8 +8,12 @@ CC=gcc
 CFLAGS=-std=c11 $(IDIRS)
 DEPS=-lyasdimaster -llog_c -lcjson -lpaho-mqtt3c
 
+ifeq ($(DEBUG), 1)
+	CFLAGS+= -g
+endif
+
 yasdi2mqtt: $(SRC)
-	$(CC) $(CFLAGS) $(DEPS) -o yasdi2mqtt $(SRC)
+	$(CC) $(CFLAGS) $(DEPS) $(SRC) -o yasdi2mqtt
 
 install: yasdi2mqtt
 	cp yasdi2mqtt $(DESTDIR)
