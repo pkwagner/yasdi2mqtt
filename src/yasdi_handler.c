@@ -193,6 +193,7 @@ struct device_value_t **yh_get_values()
                 log_error("Unknown channel %u for device %u", channel, device);
                 continue;
             case YE_TIMEOUT:
+                // Device apparently went offline
                 log_debug("Timeout for device %u (channel %u) while fetching value", device, channel);
                 RemoveDevice(device);
                 goto skip_device;
