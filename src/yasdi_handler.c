@@ -143,6 +143,11 @@ struct device_value_t **yh_get_values()
 
         DWORD channels[MAX_CHANNEL_COUNT];
         DWORD channel_count = GetChannelHandlesEx(device, channels, MAX_CHANNEL_COUNT, SPOTCHANNELS);
+        if (channel_count == 0)
+        {
+            log_debug("Device channel list download is apparently still in progress, skipping device %u...", device);
+            continue;
+        }
 
         DWORD device_sn;
         status = GetDeviceSN(device, &device_sn);
@@ -175,10 +180,10 @@ struct device_value_t **yh_get_values()
             case YE_OK:
                 break;
             case YE_UNKNOWN_HANDLE:
-                log_error("Unable to resolve name for channel %u", channel);
+                log_error("Unable to resolve name for device %u / channel %u", device, channel);
                 continue;
             default:
-                log_error("Unknown error while resolving name for channel %u: %d", channel, status);
+                log_error("Unknown error while resolving name for device %u / channel %u: %d", device, channel, status);
                 continue;
             }
 
@@ -262,7 +267,7 @@ void device_detection_cb(TYASDIDetectionSub event, DWORD device)
         }
         else
         {
-            log_warn("Detected device (handle: %u) is already part of active_devices", device);
+            log_warn("Detected device %u is already part of active_devices", device);
         }
         break;
     case YASDI_EVENT_DEVICE_REMOVED:
@@ -270,12 +275,15 @@ void device_detection_cb(TYASDIDetectionSub event, DWORD device)
         if (device_active)
             active_devices[device_i] = 0;
         else
-            log_warn("Removed devices (handle: %u) is not part of active_devices", device);
+            log_warn("Removed device %u is not part of active_devices", device);
         break;
     case YASDI_EVENT_DEVICE_SEARCH_END:
-        log_debug("Device detection finished");
+        log_debug("Device detection finished with %u devices", device);
+        break;
+    case YASDI_EVENT_DOWNLOAD_CHANLIST:
+        log_debug("Downloading channel list for device %u", device);
         break;
     default:
-        log_warn("Got invalid event for device_detection_cb");
+        log_warn("Got invalid event (device: %u) for device_detection_cb: %d", device, event);
     }
 }
