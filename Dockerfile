@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install -y git gcc make cmake openssl libssl-dev l
  && cd ../../../.. \
  && cd yasdi2mqtt && make YASDI_PATH=../yasdi && make YASDI_PATH=../yasdi install && cd .. \
  && rm -rf paho logc yasdi \
- && apt-get purge -y --auto-remove git gcc make cmake libssl-dev libcjson-dev
+ && apt-get purge -y --auto-remove git gcc make cmake libssl-dev libcjson-dev \
+ && mkdir /opt/yasdi2mqtt && cp /yasdi2mqtt/docker-entrypoint.sh /opt/yasdi2mqtt/entrypoint.sh
 
-# Temporary usage: docker run yasdi2mqtt yasdi2mqtt -c <yasdi_config> -d <yasdi_driver_id> -i <yasdi_max_device_count> -u <yasdi_update_interval> -t <mqtt_topic_prefix> -s <mqtt_server> -p <mqtt_port> (-U <mqtt_user>) (-P <mqtt_password>) (-l <log_level>)
-# Friendly reminder to mount yasdi.ini and /dev/ttyUSB0 :)
+WORKDIR /opt/yasdi2mqtt
+
+ENTRYPOINT ["./entrypoint.sh"]
