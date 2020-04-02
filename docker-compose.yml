@@ -3,12 +3,12 @@ services:
     yasdi2mqtt:
         build: "."
         volumes:
-            - "./devices:/opt/yasdi2mqtt/devices"
-            - "./yasdi.ini:/opt/yasdi2mqtt/yasdi.ini:ro"
+            - "./devices:/etc/yasdi2mqtt/devices"
+            - "./yasdi.ini:/etc/yasdi2mqtt/yasdi.ini:ro"
         devices: 
             - "/dev/ttyUSB0:/dev/ttyUSB0"
         environment:
-            YASDI_CONFIG: "/opt/yasdi2mqtt/yasdi.ini"
+            YASDI_CONFIG: "/etc/yasdi2mqtt/yasdi.ini"
             YASDI_DRIVER_ID: 0
             YASDI_MAX_DEVICE_COUNT: 1
             YASDI_UPDATE_INTERVAL: 30
