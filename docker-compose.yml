@@ -1,0 +1,19 @@
+version: "3"
+services:
+    yasdi2mqtt:
+        build: "."
+        volumes:
+            - "./devices:/opt/yasdi2mqtt/devices"
+            - "./yasdi.ini:/opt/yasdi2mqtt/yasdi.ini:ro"
+        devices: 
+            - "/dev/ttyUSB0:/dev/ttyUSB0"
+        environment:
+            YASDI_CONFIG: "/opt/yasdi2mqtt/yasdi.ini"
+            YASDI_DRIVER_ID: 0
+            YASDI_MAX_DEVICE_COUNT: 1
+            YASDI_UPDATE_INTERVAL: 30
+            MQTT_TOPIC_PREFIX: "solar/inverter"
+            MQTT_SERVER: "example.com"
+            MQTT_PORT: 1883
+            MQTT_USER: "johndoe"
+            MQTT_PASSWORD: "sEcReT"
