@@ -15,5 +15,5 @@ RUN apt-get update && apt-get install -y git gcc make cmake openssl libssl-dev l
  && rm -rf paho logc yasdi \
  && apt-get purge -y --auto-remove git gcc make cmake libssl-dev libcjson-dev
 
-# Temporary usage: docker run yasdi2mqtt yasdi2mqtt -c <yasdi_config> -d <yasdi_driver_id> -i <yasdi_max_device_count> -t <mqtt_topic_prefix> -s <mqtt_server> -p <mqtt_port> (-U <mqtt_user>) (-P <mqtt_password>) (-l <log_level>)
+# Temporary usage: docker run yasdi2mqtt yasdi2mqtt -c <yasdi_config> -d <yasdi_driver_id> -i <yasdi_max_device_count> -u <yasdi_update_interval> -t <mqtt_topic_prefix> -s <mqtt_server> -p <mqtt_port> (-U <mqtt_user>) (-P <mqtt_password>) (-l <log_level>)
 # Friendly reminder to mount yasdi.ini and /dev/ttyUSB0 :)

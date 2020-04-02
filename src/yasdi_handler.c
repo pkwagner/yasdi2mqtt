@@ -13,6 +13,7 @@
 DWORD driver;
 DWORD max_device_count;
 DWORD *active_devices;
+unsigned int update_interval;
 
 void (*yh_new_values_cb)(struct device_value_t *);
 
@@ -21,15 +22,17 @@ void device_detection_cb(TYASDIDetectionSub event, DWORD device);
 
 /**
  * Initializes yasdiMaster, enables the driver and prepares for device detection. Must be called first.
- * @param ini_file      relative location of yasdi.ini file
- * @param driver_id     id of the yasdi.ini driver to use (counts from 0)
- * @param device_count  maximum amount of devices that might be connected at the same time
+ * @param ini_file               relative location of yasdi.ini file
+ * @param driver_id              id of the yasdi.ini driver to use (counts from 0)
+ * @param device_countmaximum    amount of devices that might be connected at the same time
+ * @param device_update_interval seconds to wait between device value updates
  * @return true if initialization succeeded
  */
-bool yh_init(const char *ini_file, DWORD driver_id, DWORD device_count)
+bool yh_init(const char *ini_file, DWORD driver_id, DWORD device_count, unsigned int device_update_interval)
 {
     int status;
     max_device_count = device_count;
+    update_interval = device_update_interval;
 
     DWORD driver_count;
     status = yasdiMasterInitialize(ini_file, &driver_count);
@@ -125,7 +128,9 @@ void yh_loop()
         }
         free(values);
 
-        sleep(15);
+        // TODO Subtract execution time
+        log_debug("yh_loop is going to sleep for %u seconds...", update_interval);
+        sleep(update_interval);
     }
 }
 

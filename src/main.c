@@ -14,11 +14,12 @@ int main(int argc, char **argv)
     log_set_level(LOG_INFO);
 
     uint16_t mqtt_port = 0;
+    unsigned int yasdi_update_interval = 0;
     DWORD yasdi_driver_id = 0, yasdi_max_device_count = 0;
     char *yasdi_config = NULL, *mqtt_topic_prefix = NULL, *mqtt_server = NULL, *mqtt_user = NULL, *mqtt_password = NULL;
 
     int opt;
-    while ((opt = getopt(argc, argv, "c:d:i:t:s:p:U:P:l:")) != -1)
+    while ((opt = getopt(argc, argv, "c:d:i:u:t:s:p:U:P:l:")) != -1)
     {
         switch (opt)
         {
@@ -30,6 +31,9 @@ int main(int argc, char **argv)
             break;
         case 'i':
             yasdi_max_device_count = strtoul(optarg, NULL, 10);
+            break;
+        case 'u':
+            yasdi_update_interval = strtoul(optarg, NULL, 10);
             break;
         case 't':
             mqtt_topic_prefix = optarg;
@@ -57,16 +61,17 @@ int main(int argc, char **argv)
     log_info("Configuration | yasdi_config = %s", yasdi_config);
     log_info("Configuration | yasdi_driver_id = %u", yasdi_driver_id);
     log_info("Configuration | yasdi_max_device_count = %u", yasdi_max_device_count);
+    log_info("Configuration | yasdi_update_interval = %u", yasdi_update_interval);
     log_info("Configuration | mqtt_topic_prefix = %s", mqtt_topic_prefix);
     log_info("Configuration | mqtt_server = %s", mqtt_server);
     log_info("Configuration | mqtt_port = %u", mqtt_port);
     log_info("Configuration | mqtt_user = %s", mqtt_user);
     log_info("Configuration | mqtt_password = %s", mqtt_password);
 
-    if (yasdi_config == NULL || mqtt_topic_prefix == NULL || mqtt_server == NULL || yasdi_max_device_count == 0 || mqtt_port == 0)
+    if (yasdi_config == NULL || mqtt_topic_prefix == NULL || mqtt_server == NULL || yasdi_max_device_count == 0 || yasdi_update_interval == 0 || mqtt_port == 0)
     {
         printf("\nToo few arguments. See README.md for further assistance.\n");
-        printf("Usage: yasdi2mqtt -c <yasdi_config> -d <yasdi_driver_id> -i <yasdi_max_device_count> -t <mqtt_topic_prefix> -s <mqtt_server> -p <mqtt_port> (-U <mqtt_user>) (-P <mqtt_password>) (-l <log_level>)\n");
+        printf("Usage: yasdi2mqtt -c <yasdi_config> -d <yasdi_driver_id> -i <yasdi_max_device_count> -u <yasdi_update_interval> -t <mqtt_topic_prefix> -s <mqtt_server> -p <mqtt_port> (-U <mqtt_user>) (-P <mqtt_password>) (-l <log_level>)\n");
         return -1;
     }
 
@@ -76,7 +81,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    if (!yh_init(yasdi_config, yasdi_driver_id, yasdi_max_device_count))
+    if (!yh_init(yasdi_config, yasdi_driver_id, yasdi_max_device_count, yasdi_update_interval))
     {
         log_fatal("Unable to initialize yasdi_handler");
         return -1;
