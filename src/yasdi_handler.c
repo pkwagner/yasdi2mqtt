@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 #include <log.h>
 #include <libyasdimaster.h>
 
@@ -76,13 +77,12 @@ void yh_destroy()
     free(active_devices);
 }
 
-/**
- * TODO
- */
 void yh_loop()
 {
     for (;;)
     {
+        time_t loop_start_time = time(NULL);
+
         // Count active devices
         DWORD active_device_count = 0;
         for (DWORD i = 0; i < max_device_count; i++)
@@ -128,9 +128,12 @@ void yh_loop()
         }
         free(values);
 
-        // TODO Subtract execution time
-        log_debug("yh_loop is going to sleep for %u seconds...", update_interval);
-        sleep(update_interval);
+        int sleep_time = update_interval - difftime(time(NULL), loop_start_time);
+        if (sleep_time < 0)
+            sleep_time = 0;
+
+        log_debug("yh_loop is going to sleep for %d seconds...", sleep_time);
+        sleep(sleep_time);
     }
 }
 
@@ -171,6 +174,7 @@ struct device_value_t **yh_get_values()
         // Prepare json output (format: {"sn": "...", "values": {...}})
         cJSON *device_json = cJSON_CreateObject();
         cJSON_AddNumberToObject(device_json, "sn", device_sn);
+        cJSON_AddNumberToObject(device_json, "time", time(NULL));
         cJSON *device_values = cJSON_CreateObject();
         cJSON_AddItemToObject(device_json, "values", device_values);
 
