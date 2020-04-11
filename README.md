@@ -56,8 +56,29 @@ docker run \
 | MQTT_USER              | Anonymous MQTT sessions are currently not supported, so you'll have to provide a user here (wip)                                                                                | johndoe                   |
 | MQTT_PASSWORD          | Anonymous MQTT sessions are currently not supported, so you'll have to provide a password here (wip)                                                                                | sEcReT                    |
 
-## Debugging
-> Work in progress.
+## Output format
+`yasdi2mqtt` will publish such a json message via mqtt in the given update interval for each connected inverter (channel `$MQTT_TOPIC_PREFIX/<device_sn>`):
+```json
+{"sn":000,"time":1586608779,"values": {
+   "Iac":12580,
+   "Uac":239,
+   "Fac":50.019998881965876,
+   "Pac":3006,
+   "Zac":0.17200000816956162,
+   "Riso":10000,
+   "dI":4,
+   "Upv-Ist":416,
+   "PPV":3013,
+   "E-Total":45358.538154414855,
+   "h-Total":47797.772832013434,
+   "h-On":51654.766385075491,
+   "Netz-Ein":9012,
+   "Seriennummer":000,
+   "E-Total DC":45694.108978657052,
+   "Status":"Mpp",
+   "Fehler":"-------"
+}}
+```
 
 ## TODO
 * Allow anonymous MQTT sessions in `docker-entrypoint.sh` (remove parameters if env not set)
