@@ -19,10 +19,29 @@ There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend usin
         * Consider setting log level to `DEBUG` if device detection / the first MQTT message takes too much time
 
 ### Approach II: docker
-> Work in progress. Use docker-compose instead.
+1. Check if `yasdi.ini` file fits your needs
+    * Especially the serial adapter mountpoint (`Device` parameter) might differ across systems
+2. `docker build -t yasdi2mqtt .`
+3. Start container as described below, but remind to replace variables according to environmental variable reference list
+```
+docker run \
+   --device /dev/ttyUSB0:/dev/ttyUSB0 \
+   -v <project_dir>/devices:/etc/yasdi2mqtt/devices \
+   -v <project_dir>/yasdi.ini:/etc/yasdi2mqtt/yasdi.ini:ro \
+   -e YASDI_CONFIG="/etc/yasdi2mqtt/yasdi.ini" \
+   -e YASDI_DRIVER_ID="0" \
+   -e YASDI_MAX_DEVICE_COUNT="1" \
+   -e YASDI_UPDATE_INTERVAL="30" \
+   -e MQTT_TOPIC_PREFIX="/solar/inverter" \
+   -e MQTT_SERVER="example.com" \
+   -e MQTT_PORT="1883" \
+   -e MQTT_USER="johndoe" \
+   -e MQTT_PASSWORD="sEcReT" \
+   yasdi2mqtt
+```
 
 ### Approach III: Manual setup
-> Work in progress. Use docker-compose instead.
+> Work in progress. Use docker-compose or docker instead.
 
 ### Environmental variables
 | Variable               | Description                                                                                                                              | Example value             |
@@ -34,8 +53,8 @@ There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend usin
 | MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                            | solar/inverter            |
 | MQTT_SERVER            |                                                                                                                                          | example.com               |
 | MQTT_PORT              |                                                                                                                                          | 1883                      |
-| MQTT_USER              | Anonymous MQTT sessions are currently not supported (wip)                                                                                | johndoe                   |
-| MQTT_PASSWORD          | Anonymous MQTT sessions are currently not supported (wip)                                                                                | sEcReT                    |
+| MQTT_USER              | Anonymous MQTT sessions are currently not supported, so you'll have to provide a user here (wip)                                                                                | johndoe                   |
+| MQTT_PASSWORD          | Anonymous MQTT sessions are currently not supported, so you'll have to provide a password here (wip)                                                                                | sEcReT                    |
 
 ## Debugging
 > Work in progress.
