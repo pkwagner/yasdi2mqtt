@@ -4,7 +4,7 @@
 ![Grafana setup with yasdi2mqtt](asset/grafana.png "Grafana setup with yasdi2mqtt")
 
 ## Setup & Run
-There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend using `docker-compose` or `docker` for setup.
+There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend using `docker-compose` or `docker` for setup. If you encounter any problems, feel free to open an issue!
 
 ### Approach I: docker-compose
 1. Check if `yasdi.ini` file fits your needs
@@ -22,7 +22,7 @@ There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend usin
 1. Check if `yasdi.ini` file fits your needs
     * Especially the serial adapter mountpoint (`Device` parameter) might differ across systems
 2. `docker build -t yasdi2mqtt .`
-3. Start container as described below, but don't forget to replace variables according to environmental variable reference list
+3. Start container with the following command and replace variables according to environmental variable reference list
 ```
 docker run \
    --device /dev/ttyUSB0:/dev/ttyUSB0 \
