@@ -22,7 +22,7 @@ There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend usin
 1. Check if `yasdi.ini` file fits your needs
     * Especially the serial adapter mountpoint (`Device` parameter) might differ across systems
 2. `docker build -t yasdi2mqtt .`
-3. Start container as described below, but remind to replace variables according to environmental variable reference list
+3. Start container as described below, but don't forget to replace variables according to environmental variable reference list
 ```
 docker run \
    --device /dev/ttyUSB0:/dev/ttyUSB0 \
@@ -53,8 +53,9 @@ docker run \
 | MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                            | solar/inverter            |
 | MQTT_SERVER            |                                                                                                                                          | example.com               |
 | MQTT_PORT              |                                                                                                                                          | 1883                      |
-| MQTT_USER              | Anonymous MQTT sessions are currently not supported, so you'll have to provide a user here (wip)                                                                                | johndoe                   |
-| MQTT_PASSWORD          | Anonymous MQTT sessions are currently not supported, so you'll have to provide a password here (wip)                                                                                | sEcReT                    |
+| MQTT_USER              | *Optional*                                                                                | johndoe                   |
+| MQTT_PASSWORD          | *Optional*                                                                                | sEcReT                    |
+| LOG_LEVEL          | *Optional*<br><br>Set `0` to enable debug output                                                                                | 0                    |
 
 ## Output format
 `yasdi2mqtt` will publish such a json message via mqtt in the given update interval for each connected inverter (channel `$MQTT_TOPIC_PREFIX/<device_sn>`):
@@ -79,8 +80,3 @@ docker run \
    "Fehler":"-------"
 }}
 ```
-
-## TODO
-* Allow anonymous MQTT sessions in `docker-entrypoint.sh` (remove parameters if env not set)
-* Add optional debug flag to `docker-compose.yml` / `docker-entrypoint.sh`
-

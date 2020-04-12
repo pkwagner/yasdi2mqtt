@@ -1,6 +1,19 @@
 #!/bin/sh
 set -e
 
-# TODO Make username/password optional
-# TODO Pass debug level
-yasdi2mqtt -c "$YASDI_CONFIG" -d "$YASDI_DRIVER_ID" -i "$YASDI_MAX_DEVICE_COUNT" -u "$YASDI_UPDATE_INTERVAL" -t "$MQTT_TOPIC_PREFIX" -s "$MQTT_SERVER" -p "$MQTT_PORT" -U "$MQTT_USER" -P "$MQTT_PASSWORD"
+if ! [ "$MQTT_USER" = "" ]; then
+	ARG_USER="-U"
+	ARG_USER_VAL=$MQTT_USER
+fi
+
+if ! [ "$MQTT_PASSWORD" = "" ]; then
+	ARG_PASSWORD="-P"
+	ARG_PASSWORD_VAL=$MQTT_PASSWORD
+fi
+
+if ! [ "$LOG_LEVEL" = "" ]; then
+	ARG_LOG="-l"
+	ARG_LOG=$LOG_LEVEL
+fi
+
+yasdi2mqtt -c "$YASDI_CONFIG" -d "$YASDI_DRIVER_ID" -i "$YASDI_MAX_DEVICE_COUNT" -u "$YASDI_UPDATE_INTERVAL" -t "$MQTT_TOPIC_PREFIX" -s "$MQTT_SERVER" -p "$MQTT_PORT" "$ARG_USER" "$ARG_USER_VAL" "$ARG_PASSWORD" "$ARG_PASSWORD_VAL" "$ARG_LOG" "$ARG_LOG_VAL"
