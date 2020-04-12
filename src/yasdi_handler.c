@@ -132,8 +132,10 @@ void yh_loop()
         if (sleep_time < 0)
             sleep_time = 0;
 
+        // Dirty fix to keep container responsive during sleep
         log_debug("yh_loop is going to sleep for %d seconds...", sleep_time);
-        sleep(sleep_time);
+        for (int i = 0; i < sleep_time; i++)
+            sleep(1);
     }
 }
 
