@@ -20,10 +20,10 @@ MQTTClient_connectOptions options;
 bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
 int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message);
-void mqtt_msg_delivered_cb(void *context, MQTTClient_deliveryToken dt);
 
 bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *topic_prefix)
 {
+    int status;
     topic_pfx = topic_prefix;
 
     options = (MQTTClient_connectOptions)MQTTClient_connectOptions_initializer;
@@ -43,8 +43,17 @@ bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *to
     }
     sprintf(url, "tcp://%s:%u", server, port);
 
-    MQTTClient_create(&client, url, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    MQTTClient_setCallbacks(client, NULL, mqtt_conn_lost_cb, NULL, NULL);
+    status = MQTTClient_create(&client, url, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    if (status != MQTTCLIENT_SUCCESS) {
+        log_fatal("Error while creating MQTTClient instance: %d", status);
+        return false;
+    }
+
+    status = MQTTClient_setCallbacks(client, NULL, mqtt_conn_lost_cb, mqtt_msg_arrived_cb, NULL);
+    if (status != MQTTCLIENT_SUCCESS) {
+        log_fatal("Error while setting MQTTClient callbacks: %d", status);
+        return false;
+    }
 
     return mqtt_connect();
 }
@@ -122,4 +131,9 @@ void mqtt_conn_lost_cb(void *context, char *cause)
 {
     log_warn("Lost connection to mqtt broker: %s", cause);
     mqtt_connect();
+}
+
+int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message)
+{
+    // Empty callback
 }
