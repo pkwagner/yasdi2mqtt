@@ -12,7 +12,7 @@ There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend usin
 2. Edit `docker-compose.yml`
     * Set environmental variables (`environment` section) according to environmental variable reference below
     * Change serial adapter mountpoint in `devices` (if modified in step 1)
-3. `$ docker-compose up`
+3. `docker-compose up`
     * Build might take a few minutes
     * After starting up, `yasdi2mqtt` should immediately connect to your MQTT broker
     * Detected devices will be printed to console, nevertheless the first MQTT message might take 1-2 minutes more, since channel list has to be downloaded first
@@ -23,7 +23,7 @@ There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend usin
     * Especially the serial adapter mountpoint (`Device` parameter) might differ across systems
 2. `docker build -t yasdi2mqtt .`
 3. Start container with the following command and replace variables according to environmental variable reference list
-```
+```sh
 docker run \
    --device /dev/ttyUSB0:/dev/ttyUSB0 \
    -v <project_dir>/devices:/etc/yasdi2mqtt/devices \
