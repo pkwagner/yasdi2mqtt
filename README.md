@@ -43,13 +43,32 @@ docker run \
 ```
 
 ### Variant III: Manual setup
-> Work in progress. Use docker-compose or docker instead.
+1. Install [cJSON](https://github.com/DaveGamble/cJSON), other project's dependencies and build toolchain
+   1. `sudo apt install git gcc make cmake openssl libssl-dev libcjson1 libcjson-dev` for Ubuntu-based distributions
+2. Clone and install [Paho](https://github.com/eclipse/paho.mqtt.c.git)
+    1. `make`
+    2. `sudo make install`
+3. Clone and install [log.c](https://github.com/rxi/log.c.git)
+    1. `gcc -shared -fPIC -DLOG_USE_COLOR -o liblog_c.so src/log.c`
+    2. `sudo cp liblog_c.so /usr/local/lib` to install system-wide
+    3. `sudo cp src/*.h /usr/local/include` to make headers available system-wide
+4. Clone and install [YASDI](https://github.com/konstantinblaesi/yasdi.git)
+    1. `mkdir projects/generic-cmake/build-gcc`
+    2. `cd projects/generic-cmake/build-gcc`
+    3. `cmake -D YASDI_DEBUG_OUTPUT=0 ..`
+    4. `make`
+    5. `sudo make install`
+5. Clone and install this repository
+    1. `make YASDI_PATH=<yasdi_dir>`
+    2. `sudo make YASDI_PATH=<yasdi_dir> install`
+6. Run `yasdi2mqtt` with required parameters (see `docker-entrypoint.sh` and compare with table below)
 
 ### Debugging
 If you stuck during setup, there are a few options you can check to make `yasdi2mqtt` more verbose:
 * Enable debug output of `yasdi2mqtt` itself (see variable `LOG_LEVEL` in table below)
 * Replace `YASDI_DEBUG_OUTPUT=0` by `YASDI_DEBUG_OUTPUT=1` in `Dockerfile` to activate `YASDI` debug output
     * Don't forget to rebuild your container
+    * When using manual setup method, replace parameter during YASDI install directly
 
 ### Environmental variables
 | Variable               | Description                                                                                                                              | Example value             |
