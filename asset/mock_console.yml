@@ -1,0 +1,149 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+  
+  # Specify the current working directory path
+  # the default is the current working directory path
+  # cwd: /dev/null
+  
+  # Export additional ENV variables
+  env:
+    recording: true
+  
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 100
+  
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 26
+  
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+  
+  # Quality
+  # 1 - 100
+  quality: 100
+  
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+  
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: auto
+  
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: yasdi2mqtt
+    style:
+      border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+  
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+  
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+  
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  
+  # The size of the font
+  fontSize: 12
+  
+  # The height of lines
+  lineHeight: 1
+  
+  # The spacing between letters
+  letterSpacing: 0
+  
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+  
+# Records, feel free to edit them
+records:
+  - delay: 0
+    content: "\e[32m\e[0m"
+  - delay: 0
+    content: "\e[36m$\e[0m "
+  - delay: 50
+    content: "docker-compose "
+  - delay: 50
+    content: "up\r\n"
+  - delay: 1000
+    content: "16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:61:\e[0m Configuration | yasdi_config = /etc/yasdi2mqtt/yasdi.ini\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:62:\e[0m Configuration | yasdi_driver_id = 0\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:63:\e[0m Configuration | yasdi_max_device_count = 2\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:64:\e[0m Configuration | yasdi_update_interval = 30\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:65:\e[0m Configuration | mqtt_topic_prefix = solar/inverter\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:66:\e[0m Configuration | mqtt_server = localhost\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:67:\e[0m Configuration | mqtt_port = 1883\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:68:\e[0m Configuration | mqtt_user = (null)\r\n16:39:49 \e[32mINFO \e[0m \e[90msrc/main.c:69:\e[0m Configuration | mqtt_password = (null)\r\n"
+  - delay: 3000
+    content: "16:39:52 \e[32mINFO \e[0m \e[90msrc/yasdi_handler.c:271:\e[0m Device 1 went online\r\n"
+  - delay: 2000
+    content: "16:39:54 \e[32mINFO \e[0m \e[90msrc/yasdi_handler.c:271:\e[0m Device 187 went online\r\n"
+  - delay: 500
+    content: "\r\n\e[36m$\e[0m "
+  - delay: 50
+    content: "mosquitto_sub "
+  - delay: 50
+    content: "-h "
+  - delay: 50
+    content: "localhost "
+  - delay: 50
+    content: "-p "
+  - delay: 50
+    content: "1883 "
+  - delay: 50
+    content: "-t "
+  - delay: 50
+    content: "'solar/inverter/#'\r\n"
+  - delay: 3000
+    content: "inverter/123 {\"sn\":123,\"time\":1587487109,\"values\":{\"Iac\":1258,\"Uac\":238,\"Fac\":49.979998882859945,\"Pac\":299,\"Zac\":0.21200001006945968,\"Riso\":10000,\"dI\":4,\"Upv-Ist\":190,\"PPV\":319,\"E-Total\":45540.94216307858,\"h-Total\":47930.160071312042,\"h-On\":51793.242514048383,\"Netz-Ein\":9022,\"Seriennummer\":123,\"E-Total DC\":45876.798974573612,\"Status\":\"Mpp\",\"Fehler\":\"-------\"}}\r\n"
+  - delay: 2000
+    content: "inverter/456 {\"sn\":456,\"time\":1587487111,\"values\":{\"Iac\":1258,\"Uac\":238,\"Fac\":49.979998882859945,\"Pac\":299,\"Zac\":0.21200001006945968,\"Riso\":10000,\"dI\":4,\"Upv-Ist\":190,\"PPV\":319,\"E-Total\":45540.94216307858,\"h-Total\":47930.160071312042,\"h-On\":51793.242514048383,\"Netz-Ein\":9022,\"Seriennummer\":456,\"E-Total DC\":45876.798974573612,\"Status\":\"Mpp\",\"Fehler\":\"-------\"}}\r\n"
+  - delay: 6000
+    content: "\e[32m\e[0m"
