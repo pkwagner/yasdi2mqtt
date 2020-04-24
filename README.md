@@ -61,7 +61,13 @@ docker run \
 5. Clone and install this repository
     1. `make YASDI_PATH=<yasdi_dir>`
     2. `sudo make YASDI_PATH=<yasdi_dir> install`
-6. Run `yasdi2mqtt` with required parameters (see `docker-entrypoint.sh` and compare with table below)
+6. Check `yasdi.ini` configuration
+    * The included blueprint is meant to be used with serial adapters, but IP-based communication should be possible as well (see YASDI reference)
+7. Create empty `devices` directory
+    * YASDI will use this folder as device cache, so you'll save the 1-2 minutes for device data download after second startup
+8. Run `yasdi2mqtt` with required parameters (see `docker-entrypoint.sh` and compare with table below)
+    * After starting up, `yasdi2mqtt` should immediately connect to your MQTT broker
+    * Detected devices will be printed to console, the first MQTT message might take 1-2 minutes more because of device data download
 
 ### Debugging
 If you stuck during setup, there are a few options you can check to make `yasdi2mqtt` more verbose:
@@ -71,18 +77,18 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
     * When using manual setup method, replace parameter during YASDI install directly
 
 ### Environmental variables
-| Variable               | Description                                                                                                                              | Example value             |
-|------------------------|------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
-| YASDI_CONFIG           | Path to `yasdi.ini` file <br> *Inside container, shouldn't be changed therefore*                                  | /etc/yasdi2mqtt/yasdi.ini |
-| YASDI_DRIVER_ID        | ID of driver declared in `yasdi.ini` to use                                                                                                | 0                         |
-| YASDI_MAX_DEVICE_COUNT | Maximum number of devices being online at the same time                                                                                  | 1                         |
+| Variable               | Description                                                                                                                                   | Example value             |
+|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| YASDI_CONFIG           | Path to `yasdi.ini` file <br> *Inside container, shouldn't be changed therefore*                                                              | /etc/yasdi2mqtt/yasdi.ini |
+| YASDI_DRIVER_ID        | ID of driver declared in `yasdi.ini` to use                                                                                                   | 0                         |
+| YASDI_MAX_DEVICE_COUNT | Maximum number of devices being online at the same time                                                                                       | 1                         |
 | YASDI_UPDATE_INTERVAL  | Time between value update requests in seconds <br> *Value update itself takes some time, so it shouldn't be lower than 15 from my experience* | 30                        |
-| MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                            | solar/inverter            |
-| MQTT_SERVER            |                                                                                                                                          | example.com               |
-| MQTT_PORT              |                                                                                                                                          | 1883                      |
-| MQTT_USER              | *Optional*                                                                                | johndoe                   |
-| MQTT_PASSWORD          | *Optional*                                                                                | sEcReT                    |
-| LOG_LEVEL          | *Optional*<br><br>Set `0` to enable debug output                                                                                | 0                    |
+| MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                               | solar/inverter            |
+| MQTT_SERVER            |                                                                                                                                               | example.com               |
+| MQTT_PORT              |                                                                                                                                               | 1883                      |
+| MQTT_USER              | *Optional*                                                                                                                                    | johndoe                   |
+| MQTT_PASSWORD          | *Optional*                                                                                                                                    | sEcReT                    |
+| LOG_LEVEL              | *Optional*<br><br>Set `0` to enable debug output                                                                                              | 0                         |
 
 ## Output format
 `yasdi2mqtt` will publish a json payload via mqtt in the given update interval (channel `$MQTT_TOPIC_PREFIX/<device_sn>`). Messages will be sent for each inverter individually and have the following format:
