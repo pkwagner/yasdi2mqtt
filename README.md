@@ -6,6 +6,8 @@
 ## Setup & Run
 There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend using `docker-compose` or `docker` for setup. If you encounter any problems, feel free to open an issue!
 
+By default YASDI is configured to use directly attached RS485 adapters. Further information on how to set up IP-based hardware instead can be found [here](https://github.com/pkwagner/yasdi2mqtt/issues/1) (German).
+
 ### Variant I: docker-compose
 1. Check `yasdi.ini` configuration
     * The included blueprint is meant to be used with serial adapters, but IP-based communication should be possible as well (see YASDI reference)
@@ -91,7 +93,7 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
 | LOG_LEVEL              | *Optional*<br><br>Set `0` to enable debug output                                                                                              | 0                         |
 
 ## Output format
-`yasdi2mqtt` will publish a json payload via mqtt in the given update interval (channel `$MQTT_TOPIC_PREFIX/<device_sn>`). Messages will be sent for each inverter individually and have the following format:
+`yasdi2mqtt` will publish a json payload via MQTT in the given update interval (channel `$MQTT_TOPIC_PREFIX/<device_sn>`). Messages will be sent for each inverter individually and have the following format:
 ```json
 {"sn":000,"time":1586608779,"values": {
    "Iac":12580,
