@@ -79,7 +79,7 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
     * When using manual setup method, replace parameter during YASDI install directly
 
 ### Environmental variables
-> **Caution:** All configuration params below will be passed to `yasdi2mqtt` as program arguments. Therefore, especially the mqtt credentials will be exposed system-wide via process list. Keep this in mind when securing your mqtt access.
+> **Caution:** All configuration params below will be passed to `yasdi2mqtt` as program arguments. Therefore, especially the MQTT credentials will be exposed system-wide via process list. Keep this in mind when securing your MQTT access.
 
 | Variable               | Description                                                                                                                                   | Example value             |
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
