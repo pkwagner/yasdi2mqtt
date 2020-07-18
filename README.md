@@ -6,7 +6,7 @@
 ## Setup & Run
 There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend using `docker-compose` or `docker` for setup. If you encounter any problems, feel free to open an issue!
 
-By default YASDI is configured to use directly attached RS485 adapters. Further information on how to set up IP-based hardware instead can be found [here](https://github.com/pkwagner/yasdi2mqtt/issues/1) (German).
+By default YASDI is configured to use directly attached RS485 adapters. Further information on how to set up IP-based hardware instead can be found [here](https://github.com/pkwagner/yasdi2mqtt/issues/1) (German). To prevent permission problems, `yasdi2mqtt` runs as container root in all showcased scenarios. Therefore, consider creating an unprivileged user for production builds.
 
 ### Variant I: docker-compose
 1. Check `yasdi.ini` configuration
@@ -79,6 +79,8 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
     * When using manual setup method, replace parameter during YASDI install directly
 
 ### Environmental variables
+> **Caution:** All configuration params below will be passed to `yasdi2mqtt` as program arguments. Therefore, especially the mqtt credentials will be exposed system-wide via process list. Keep this in mind when securing your mqtt access.
+
 | Variable               | Description                                                                                                                                   | Example value             |
 |------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
 | YASDI_CONFIG           | Path to `yasdi.ini` file <br> *Inside container, shouldn't be changed therefore*                                                              | /etc/yasdi2mqtt/yasdi.ini |
