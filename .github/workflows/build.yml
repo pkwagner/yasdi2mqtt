@@ -6,7 +6,7 @@ on:
   release:
     types: [released]
   schedule:
-    - cron: 0 22 * * 0
+    - cron: 0 5 1 * *
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up Docker Buildx
+      - name: Docker Buildx setup
         uses: crazy-max/ghaction-docker-buildx@v3
         with:
           buildx-version: latest
@@ -39,7 +39,7 @@ jobs:
             --push \
             $TAGS \
             .
-      - name: Clean up
+      - name: Cleanup
         if: always()
         run: |
           rm -f ${HOME}/.docker/config.json
