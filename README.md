@@ -29,8 +29,7 @@ By default YASDI is configured to use directly attached RS485 adapters. Further 
     * The included blueprint is meant to be used with serial adapters, but IP-based communication should be possible as well (see YASDI reference)
 2. Create empty `devices` directory
     * YASDI will use this folder as device cache, so you'll save the 1-2 minutes for device data download after second startup
-3. `docker build -t yasdi2mqtt .`
-4. Start container with following command:
+3. Start container with following command:
 ```sh
 docker run \
    --device /dev/ttyUSB0:/dev/ttyUSB0 \
@@ -45,7 +44,7 @@ docker run \
    -e MQTT_PORT="1883" \
    -e MQTT_USER="johndoe" \
    -e MQTT_PASSWORD="sEcReT" \
-   yasdi2mqtt
+   pkwagner/yasdi2mqtt
 ```
 
 ### Variant III: Manual setup
@@ -76,10 +75,9 @@ docker run \
     * Detected devices will be printed to console, the first MQTT message might take 1-2 minutes more because of device data download
 
 ### Debugging
-If you stuck during setup, there are a few options you can check to make `yasdi2mqtt` more verbose:
+If you stuck during setup, there are a few options you can check to make `yasdi2mqtt` more verbose. When using custom build settings, you always need to compile your own container with `docker build -t yasdi2mqtt .` afterwards.
 * Enable debug output of `yasdi2mqtt` itself (see variable `LOG_LEVEL` in table below)
 * Replace `YASDI_DEBUG_OUTPUT=0` by `YASDI_DEBUG_OUTPUT=1` in `Dockerfile` to activate `YASDI` debug output
-    * Don't forget to rebuild your container
     * When using manual setup method, replace parameter during YASDI install directly
 
 ### Environmental variables
