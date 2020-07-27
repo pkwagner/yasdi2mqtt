@@ -6,7 +6,6 @@
 #include <MQTTClient.h>
 
 #define CLIENT_ID "yasdi2mqtt"
-#define MQTT_QOS 2
 #define MQTT_KEEP_ALIVE_INTERVAL 20
 #define MQTT_DISCONNECT_TIMEOUT 1000
 #define MQTT_RECONNECT_INTERVAL 10
@@ -14,6 +13,7 @@
 #define MAX_TOPIC_NAME_SIZE 128
 
 char *topic_pfx;
+int qos_lvl;
 MQTTClient client;
 MQTTClient_connectOptions options;
 
@@ -21,10 +21,11 @@ bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
 int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message);
 
-bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *topic_prefix)
+bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *topic_prefix, int qos_level)
 {
     int status;
     topic_pfx = topic_prefix;
+    qos_lvl = qos_level;
 
     options = (MQTTClient_connectOptions)MQTTClient_connectOptions_initializer;
     if (user != NULL && password != NULL)
@@ -114,7 +115,7 @@ bool mqtt_send(char *topic, char *payload)
     MQTTClient_message msg = MQTTClient_message_initializer;
     msg.payload = payload;
     msg.payloadlen = strlen(payload);
-    msg.qos = MQTT_QOS;
+    msg.qos = qos_lvl;
     msg.retained = false;
 
     int status = MQTTClient_publishMessage(client, topic_with_pfx, &msg, NULL);

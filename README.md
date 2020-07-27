@@ -92,6 +92,7 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
 | MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                               | solar/inverter            |
 | MQTT_SERVER            |                                                                                                                                               | example.com               |
 | MQTT_PORT              |                                                                                                                                               | 1883                      |
+| MQTT_QOS_LEVEL         | *Optional*<br><br>See [here](http://www.steves-internet-guide.com/understanding-mqtt-qos-levels-part-1/) for explanation.                     | 2                         |
 | MQTT_USER              | *Optional*                                                                                                                                    | johndoe                   |
 | MQTT_PASSWORD          | *Optional*                                                                                                                                    | sEcReT                    |
 | LOG_LEVEL              | *Optional*<br><br>Set `0` to enable debug output                                                                                              | 0                         |
