@@ -1,7 +1,11 @@
 # yasdi2mqtt
+[![Build](https://github.com/pkwagner/yasdi2mqtt/workflows/build/badge.svg)](https://hub.docker.com/r/pkwagner/yasdi2mqtt)
+[![Docker Hub](https://img.shields.io/docker/v/pkwagner/yasdi2mqtt?label=Docker%20Hub&color=blue&sort=date)](https://hub.docker.com/r/pkwagner/yasdi2mqtt)
+![License](https://img.shields.io/github/license/pkwagner/yasdi2mqtt?color=blue)
+
 `yasdi2mqtt` is an MQTT adapter for SMA inverters communicating over serial interface. It fetches spot values from attached devices in a fixed interval and publishes them via MQTT in JSON data format. Moreover, it also works with only a fraction of all inverters being online at the same time.
 
-![yasdi2mqtt](asset/mock_console.gif "yasdi2mqtt")
+![yasdi2mqtt](.github/assets/mock_console.gif "yasdi2mqtt")
 
 ## Setup & Run
 There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend using `docker-compose` or `docker` for setup. If you encounter any problems, feel free to open an issue!

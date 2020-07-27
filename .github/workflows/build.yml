@@ -1,0 +1,45 @@
+name: build
+
+on:
+  push:
+    branches: master
+  release:
+    types: [released]
+  schedule:
+    - cron: 0 22 * * 0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE: pkwagner/yasdi2mqtt
+      DOCKER_PLATFORMS: linux/amd64,linux/386,linux/arm/v6,linux/arm/v7,linux/arm64
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
+        with:
+          buildx-version: latest
+          qemu-version: latest
+      - name: Authentication
+        run: |
+          echo "${{secrets.DOCKER_TOKEN}}" | docker login --username "${{secrets.DOCKER_USERNAME}}" --password-stdin
+      - name: Build & Deploy
+        if: success()
+        run: |
+          TAGS="--tag ${DOCKER_IMAGE}:latest"
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            TAGS="$TAGS --tag ${DOCKER_IMAGE}:stable"
+            TAGS="$TAGS --tag ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
+          fi
+
+          docker buildx build \
+            --platform $DOCKER_PLATFORMS \
+            --push \
+            $TAGS \
+            .
+      - name: Clean up
+        if: always()
+        run: |
+          rm -f ${HOME}/.docker/config.json
