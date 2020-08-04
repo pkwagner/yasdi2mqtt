@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+cd /etc/yasdi2mqtt
+
 if ! [ "$MQTT_QOS_LEVEL" = "" ]; then
 	ARG_QOS_LEVEL="-q"
 	ARG_QOS_LEVEL_VAL=$MQTT_QOS_LEVEL
