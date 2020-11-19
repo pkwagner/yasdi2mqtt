@@ -35,7 +35,7 @@ jobs:
       - name: MQTT smokefire setup
         uses: pkwagner/smoky-mqtt@v0.5
         with:
-          ids: ${{DOCKER_PLATFORMS}}
+          ids: test1
           timeout: 10
       - name: Smokefire testing
         if: always()
