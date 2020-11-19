@@ -8,10 +8,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_IMAGE: pkwagner/yasdi2mqtt
-      DOCKER_PLATFORMS: linux/amd64
+      DOCKER_PLATFORMS: linux/amd64,linux/arm64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Enable Docker experimental features
+        run: |
+          echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
       - name: QEMU setup
         uses: docker/setup-qemu-action@v1
       - name: Docker Buildx setup
@@ -32,21 +36,18 @@ jobs:
             --platform $DOCKER_PLATFORMS \
             $TAGS \
             .
-      - name: Smokefire testing
+      - name: Fire up containers for smoke testing
         if: success()
         run: |
-          echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json
-          sudo systemctl restart docker
-          
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
             docker run --rm -d --name ${PLATFORM////} --network=host --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass $DOCKER_IMAGE
           done
-      - name: MQTT smokefire setup
+      - name: Set up smoke testing workbench
         uses: pkwagner/smoky-mqtt@v0.6
         with:
           ids: ${{env.DOCKER_PLATFORMS}}
           timeout: 60
-      - name: Shutdown Docker
+      - name: Shut down smoke testing containers
         run: |
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
             docker stop ${PLATFORM////}
