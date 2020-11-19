@@ -71,4 +71,7 @@ jobs:
         if: always()
         run: |
           docker run --rm -d --network=host --env-file .github/workflows/smoke-testing.env --platform linux/386 -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=gogo ${DOCKER_IMAGE}:latest
-          docker ps
+          for i in {1..10}; do
+            docker ps
+            sleep 3
+          done
