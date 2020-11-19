@@ -35,11 +35,13 @@ jobs:
       - name: MQTT smokefire setup
         uses: pkwagner/smoky-mqtt@v0.5
         with:
-          ids: ${DOCKER_PLATFORMS}
-          timeout: 60
+          ids: ${{DOCKER_PLATFORMS}}
+          timeout: 10
       - name: Smokefire testing
         if: always()
         run: |
+          echo '{"experimental": true}' | sudo tee -a /etc/docker/daemon.json
+          
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
             docker run --rm --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=0 -e YASDI_MAX_DEVICE_COUNT=0 -e YASDI_UPDATE_INTERVAL=0 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass ${DOCKER_IMAGE}:latest
           done
