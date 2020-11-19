@@ -20,7 +20,7 @@ jobs:
           version: latest
           install: true
       - name: MQTT smokefire setup
-        uses: pkwagner/smoky-mqtt@v0.3
+        uses: pkwagner/smoky-mqtt@v0.4
         with:
           ids: "test1,test2"
           timeout: 10
