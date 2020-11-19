@@ -20,7 +20,7 @@ jobs:
           version: latest
           install: true
       - name: Enable Docker experimental features
-        if: sucess()
+        if: success()
         run: |
           echo '{"experimental": true}' | sudo tee /etc/docker/daemon.json
           sudo systemctl restart docker
@@ -39,7 +39,7 @@ jobs:
             .
       - name: Set up smoke testing workbench
         if: success()
-        uses: pkwagner/smoky-mqtt@v0.6
+        uses: pkwagner/smoky-mqtt@v0.9
         with:
           ids: ${{env.DOCKER_PLATFORMS}}
           timeout: 60
