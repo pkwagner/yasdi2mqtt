@@ -47,7 +47,7 @@ jobs:
       - name: Fire up containers for smoke testing
         run: |
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
-            docker run --rm -d --name ${PLATFORM////} --network=host --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass elizabeth
+            docker run --rm -d --name ${PLATFORM////} --network=host --env-file .github/workflows/smoke-testing.env --platform $PLATFORM -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM elizabeth
           done
       - name: Shut down smoke testing containers
         if: always()
