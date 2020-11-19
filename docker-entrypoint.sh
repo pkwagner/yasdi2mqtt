@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+uname -a
+
 cd /etc/yasdi2mqtt
 
 if ! [ "$MQTT_QOS_LEVEL" = "" ]; then
