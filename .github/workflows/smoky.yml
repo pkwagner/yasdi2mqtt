@@ -23,7 +23,7 @@ jobs:
       - name: Build & Deploy
         if: success()
         run: |
-          TAGS="--tag ${DOCKER_IMAGE}:latest"
+          TAGS="--tag ${DOCKER_IMAGE}"
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             TAGS="$TAGS --tag ${DOCKER_IMAGE}:stable"
             TAGS="$TAGS --tag ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
