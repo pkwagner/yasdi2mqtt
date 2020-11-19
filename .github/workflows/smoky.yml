@@ -8,7 +8,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DOCKER_IMAGE: pkwagner/yasdi2mqtt
-      DOCKER_IMAGE_LOCAL: yasdi2mqtt
       DOCKER_PLATFORMS: linux/amd64
     steps:
       - name: Checkout
@@ -31,7 +30,6 @@ jobs:
 
           docker build \
             --platform $DOCKER_PLATFORMS \
-            -t $DOCKER_IMAGE_LOCAL
             $TAGS \
             .
       - name: Smokefire testing
@@ -41,7 +39,7 @@ jobs:
           sudo systemctl restart docker
           
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
-            docker run --rm -v --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass ${DOCKER_IMAGE_LOCAL}
+            docker run --rm -v --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass ${DOCKER_IMAGE}
           done
       - name: MQTT smokefire setup
         uses: pkwagner/smoky-mqtt@v0.5
