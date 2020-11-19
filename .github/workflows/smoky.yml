@@ -49,6 +49,7 @@ jobs:
         run: |
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
             docker run --rm -d --name ${PLATFORM////-} --network=host --env-file .github/workflows/smoke-testing.env --platform $PLATFORM -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=$PLATFORM ${DOCKER_IMAGE}:latest
+            docker ps
           done
       - name: Set up smoke testing workbench
         if: success()
@@ -60,6 +61,14 @@ jobs:
       - name: Shut down smoke testing containers
         if: always()
         run: |
+          docker ps
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
             docker stop ${PLATFORM////-}
+            docker ps
           done
+          docker ps
+      - name: TMP
+        if: always()
+        run: |
+          docker run --rm -d --name ${PLATFORM////-} --network=host --env-file .github/workflows/smoke-testing.env --platform linux/386 -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=$PLATFORM ${DOCKER_IMAGE}:latest
+          docker ps
