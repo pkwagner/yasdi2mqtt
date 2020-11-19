@@ -22,7 +22,7 @@ jobs:
       - name: Build & Deploy
         if: success()
         run: |
-          TAGS="--tag ${DOCKER_IMAGE}:latest"
+          TAGS="--tag ${DOCKER_IMAGE}:latest --tag ${DOCKER_IMAGE}:trello"
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             TAGS="$TAGS --tag ${DOCKER_IMAGE}:stable"
             TAGS="$TAGS --tag ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
@@ -44,5 +44,5 @@ jobs:
           sudo systemctl restart docker
           
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
-            docker run --rm --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=0 -e YASDI_MAX_DEVICE_COUNT=0 -e YASDI_UPDATE_INTERVAL=0 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass ${DOCKER_IMAGE}:latest
+            docker run --rm --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass ${DOCKER_IMAGE}:trello
           done
