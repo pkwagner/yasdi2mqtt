@@ -46,5 +46,5 @@ jobs:
       - name: MQTT smokefire setup
         uses: pkwagner/smoky-mqtt@v0.5
         with:
-          ids: "linux/amd64"
+          ids: linux/amd64
           timeout: 60
