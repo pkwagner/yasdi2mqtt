@@ -1,14 +1,14 @@
-name: smoky-mqtt-test
+name: build
 
 on:
   push:
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
       DOCKER_IMAGE: pkwagner/yasdi2mqtt
-      DOCKER_PLATFORMS: linux/amd64,linux/386,linux/arm/v6,linux/arm/v7,linux/arm64
+      DOCKER_PLATFORMS: linux/amd64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -19,8 +19,26 @@ jobs:
         with:
           version: latest
           install: true
+      - name: Build & Deploy
+        if: success()
+        run: |
+          TAGS="--tag ${DOCKER_IMAGE}:latest"
+          if [[ $GITHUB_REF == refs/tags/v* ]]; then
+            TAGS="$TAGS --tag ${DOCKER_IMAGE}:stable"
+            TAGS="$TAGS --tag ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
+          fi
+
+          docker build \
+            --platform $DOCKER_PLATFORMS \
+            $TAGS \
+            .
       - name: MQTT smokefire setup
         uses: pkwagner/smoky-mqtt@v0.5
         with:
-          ids: "test1,test2"
+          ids: $DOCKER_PLARFORMS
           timeout: 10
+      - name: Smokefire testing
+        run: |
+          for PLATFORM in ${DOCKER_PLARFORMS//,/ }; do
+            docker run --rm --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=0 -e YASDI_MAX_DEVICE_COUNT=0 -e YASDI_UPDATE_INTERVAL=0 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass ${DOCKER_IMAGE}:latest
+          done
