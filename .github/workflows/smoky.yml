@@ -36,12 +36,14 @@ jobs:
             TAGS="$TAGS -t ${DOCKER_IMAGE}:stable"
             TAGS="$TAGS -t ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
           fi
-
-          docker build \
-            --platform $DOCKER_PLATFORMS \
-            --load \
-            $TAGS \
-            .
+        
+          for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
+            docker build \
+              --platform $PLATFORM \
+              --load \
+              $TAGS \
+              .
+          done
       - name: Fire up containers for smoke testing
         if: success()
         run: |
