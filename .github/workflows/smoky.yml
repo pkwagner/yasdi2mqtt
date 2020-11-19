@@ -31,7 +31,7 @@ jobs:
 
           docker build \
             --platform $DOCKER_PLATFORMS \
-            -t $DOCKER_IMAGE_LOCAL"
+            -t $DOCKER_IMAGE_LOCAL
             $TAGS \
             .
       - name: Smokefire testing
