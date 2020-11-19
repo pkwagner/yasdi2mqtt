@@ -27,10 +27,10 @@ jobs:
       - name: Build
         if: success()
         run: |
-          TAGS="--tag ${DOCKER_IMAGE}"
+          TAGS="-t ${DOCKER_IMAGE}:latest -t elizabeth"
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
-            TAGS="$TAGS --tag ${DOCKER_IMAGE}:stable"
-            TAGS="$TAGS --tag ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
+            TAGS="$TAGS -t ${DOCKER_IMAGE}:stable"
+            TAGS="$TAGS -t ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
           fi
 
           docker build \
@@ -46,7 +46,7 @@ jobs:
       - name: Fire up containers for smoke testing
         run: |
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
-            docker run --rm -d --name ${PLATFORM////} --network=host --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass $DOCKER_IMAGE
+            docker run --rm -d --name ${PLATFORM////} --network=host --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass elizabeth
           done
       - name: Shut down smoke testing containers
         if: always()
