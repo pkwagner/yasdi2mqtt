@@ -39,10 +39,10 @@ jobs:
           sudo systemctl restart docker
           
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
-            docker run --rm -v --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass $DOCKER_IMAGE
+            docker run --rm -d --platform $PLATFORM -e YASDI_CONFIG=... -e YASDI_DRIVER_ID=1 -e YASDI_MAX_DEVICE_COUNT=1 -e YASDI_UPDATE_INTERVAL=1 -e MQTT_TOPIC_PREFIX=... -e MQTT_SERVER=localhost -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM -e MQTT_PASSWORD=nopass $DOCKER_IMAGE
           done
       - name: MQTT smokefire setup
         uses: pkwagner/smoky-mqtt@v0.5
         with:
-          ids: linux/amd64
+          ids: ${{env.DOCKER_PLATFORMS}}
           timeout: 60
