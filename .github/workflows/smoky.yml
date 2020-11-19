@@ -61,7 +61,7 @@ jobs:
       - name: TMP
         if: always()
         run: |
-          docker run --rm --network=host --env-file .github/workflows/smoke-testing.env --platform linux/arm64 -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=gogo ${DOCKER_IMAGE}:latest
+          docker run --rm --network=host --env-file .github/workflows/smoke-testing.env --platform linux/amd64 -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=gogo ${DOCKER_IMAGE}:latest
           for i in {1..10}; do
             docker ps
             sleep 3
