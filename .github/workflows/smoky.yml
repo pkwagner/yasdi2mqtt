@@ -43,6 +43,7 @@ jobs:
         with:
           ids: ${{env.DOCKER_PLATFORMS}}
           timeout: 60
+          port: 8080
       - name: Fire up containers for smoke testing
         run: |
           for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
