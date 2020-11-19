@@ -9,12 +9,16 @@ jobs:
     env:
       DOCKER_IMAGE: pkwagner/yasdi2mqtt
       DOCKER_PLATFORMS: linux/amd64,linux/arm64
+      SMOKE_TIMEOUT: 120
+      SMOKE_PORT: 8080
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: QEMU setup
+        if: success()
         uses: docker/setup-qemu-action@v1
       - name: Docker Buildx setup
+        if: success()
         uses: docker/setup-buildx-action@v1
         with:
           version: latest
@@ -37,18 +41,19 @@ jobs:
             --platform $DOCKER_PLATFORMS \
             $TAGS \
             .
+      - name: Fire up containers for smoke testing
+        if: success()
+        run: |
+          for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
+            docker run --rm -d --name ${PLATFORM////} --network=host --env-file .github/workflows/smoke-testing.env --platform $PLATFORM -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=$PLATFORM elizabeth
+          done
       - name: Set up smoke testing workbench
         if: success()
         uses: pkwagner/smoky-mqtt@v0.9
         with:
           ids: ${{env.DOCKER_PLATFORMS}}
-          timeout: 60
-          port: 8080
-      - name: Fire up containers for smoke testing
-        run: |
-          for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
-            docker run --rm -d --name ${PLATFORM////} --network=host --env-file .github/workflows/smoke-testing.env --platform $PLATFORM -e MQTT_PORT=8080 -e MQTT_USER=$PLATFORM elizabeth
-          done
+          timeout: ${{env.SMOKE_TIMEOUT}}
+          port: ${{env.SMOKE_PORT}}
       - name: Shut down smoke testing containers
         if: always()
         run: |
