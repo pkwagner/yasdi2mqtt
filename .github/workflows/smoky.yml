@@ -58,19 +58,10 @@ jobs:
           ids: ${{env.DOCKER_PLATFORMS}}
           timeout: ${{env.SMOKE_TIMEOUT}}
           port: ${{env.SMOKE_PORT}}
-      - name: Shut down smoke testing containers
-        if: always()
-        run: |
-          docker ps
-          for PLATFORM in ${DOCKER_PLATFORMS//,/ }; do
-            docker stop ${PLATFORM////-}
-            docker ps
-          done
-          docker ps
       - name: TMP
         if: always()
         run: |
-          docker run --rm -d --network=host --env-file .github/workflows/smoke-testing.env --platform linux/386 -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=gogo ${DOCKER_IMAGE}:latest
+          docker run --rm --network=host --env-file .github/workflows/smoke-testing.env --platform linux/386 -e MQTT_PORT=$SMOKE_PORT -e MQTT_USER=gogo ${DOCKER_IMAGE}:latest
           for i in {1..10}; do
             docker ps
             sleep 3
