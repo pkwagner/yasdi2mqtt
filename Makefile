@@ -6,7 +6,7 @@ SRC=src/main.c src/yasdi_handler.c src/mqtt_client.c
 
 CC=gcc
 CFLAGS=-std=c11 $(IDIRS)
-DEPS=-lyasdimaster -llog_c -lcjson -lpaho-mqtt3c
+DEPS=-lyasdimaster -llog_c -lcjson -lpaho-mqtt3cs
 
 ifeq ($(DEBUG), 1)
 	CFLAGS+= -g

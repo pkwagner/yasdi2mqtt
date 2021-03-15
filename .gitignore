@@ -1,5 +1,8 @@
 .vscode
+.idea/*
 **/*.DS_Store
 
+# yasdi2mqtt specific
 yasdi2mqtt
 devices
+cert.pem
