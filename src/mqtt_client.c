@@ -21,15 +21,26 @@ bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
 int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message);
 
-bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *topic_prefix, int qos_level)
+bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *topic_prefix, int qos_level,
+               char *ssl_cert)
 {
     int status;
     topic_pfx = topic_prefix;
     qos_lvl = qos_level;
 
     options = (MQTTClient_connectOptions)MQTTClient_connectOptions_initializer;
-    if (user != NULL && password != NULL)
-    {
+
+    /* SSL */
+    if (ssl_cert != NULL) {
+        log_debug("Setting up SSL config");
+        MQTTClient_SSLOptions sslOptions = MQTTClient_SSLOptions_initializer;
+        options.ssl = &sslOptions;
+        options.ssl->enableServerCertAuth = 0;
+        options.ssl->trustStore = ssl_cert;
+        options.ssl->sslVersion = MQTT_SSL_VERSION_TLS_1_2;
+    }
+
+    if (user != NULL && password != NULL) {
         options.username = user;
         options.password = password;
     }
@@ -42,7 +53,13 @@ bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *to
         log_fatal("MQTT server exceeds maximum length");
         return false;
     }
-    sprintf(url, "tcp://%s:%u", server, port);
+
+    if (options.ssl == NULL) {
+        sprintf(url, "tcp://%s:%u", server, port);
+    } else {
+        sprintf(url, "ssl://%s:%u", server, port);
+        log_debug("Using SSL");
+    }
 
     status = MQTTClient_create(&client, url, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     if (status != MQTTCLIENT_SUCCESS) {

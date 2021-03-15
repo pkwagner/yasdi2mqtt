@@ -83,19 +83,20 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
 ### Environmental variables
 > **Caution:** All configuration params below will be passed to `yasdi2mqtt` as program arguments. Therefore, especially the MQTT credentials will be exposed system-wide via process list. Keep this in mind when securing your MQTT access.
 
-| Variable               | Description                                                                                                                                   | Example value             |
-|------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
-| YASDI_CONFIG           | Path to `yasdi.ini` file <br> *Inside container, shouldn't be changed therefore*                                                              | /etc/yasdi2mqtt/yasdi.ini |
-| YASDI_DRIVER_ID        | ID of driver declared in `yasdi.ini` to use                                                                                                   | 0                         |
-| YASDI_MAX_DEVICE_COUNT | Maximum number of devices being online at the same time                                                                                       | 1                         |
-| YASDI_UPDATE_INTERVAL  | Time between value update requests in seconds <br> *Value update itself takes some time, so it shouldn't be lower than 15 from my experience* | 30                        |
-| MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                               | solar/inverter            |
-| MQTT_SERVER            |                                                                                                                                               | example.com               |
-| MQTT_PORT              |                                                                                                                                               | 1883                      |
-| MQTT_QOS_LEVEL         | *Optional*<br><br>See [here](http://www.steves-internet-guide.com/understanding-mqtt-qos-levels-part-1/) for explanation.                     | 2                         |
-| MQTT_USER              | *Optional*                                                                                                                                    | johndoe                   |
-| MQTT_PASSWORD          | *Optional*                                                                                                                                    | sEcReT                    |
-| LOG_LEVEL              | *Optional*<br><br>Set `0` to enable debug output                                                                                              | 0                         |
+| Variable               | Description                                                                                                                                                                   | Example value             |
+|------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
+| YASDI_CONFIG           | Path to `yasdi.ini` file <br> *Inside container, shouldn't be changed therefore*                                                                                              | /etc/yasdi2mqtt/yasdi.ini |
+| YASDI_DRIVER_ID        | ID of driver declared in `yasdi.ini` to use                                                                                                                                   | 0                         |
+| YASDI_MAX_DEVICE_COUNT | Maximum number of devices being online at the same time                                                                                                                       | 1                         |
+| YASDI_UPDATE_INTERVAL  | Time between value update requests in seconds <br> *Value update itself takes some time, so it shouldn't be lower than 15 from my experience*                                 | 30                        |
+| MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                                                               | solar/inverter            |
+| MQTT_SERVER            |                                                                                                                                                                               | example.com               |
+| MQTT_PORT              |                                                                                                                                                                               | 1883 (8883 if you use SSL)|
+| MQTT_QOS_LEVEL         | *Optional*<br><br>See [here](http://www.steves-internet-guide.com/understanding-mqtt-qos-levels-part-1/) for explanation.                                                     | 2                         |
+| MQTT_USER              | *Optional*                                                                                                                                                                    | johndoe                   |
+| MQTT_PASSWORD          | *Optional*                                                                                                                                                                    | sEcReT                    |
+| LOG_LEVEL              | *Optional*<br><br>Set `0` to enable debug output                                                                                                                              | 0                         |
+| SSL_CERT               | *Optional*<br><br>Path to `cert.pem` file<br>*If you want to use MQTTS, you have to define the path to the cert here and add the cert to the container (e.g. mount a volume)* | /etc/certs/cert.pem       |
 
 ## Output format
 `yasdi2mqtt` will publish a json payload via MQTT in the given update interval (channel `$MQTT_TOPIC_PREFIX/<device_sn>`). Messages will be sent for each inverter individually and have the following format:
