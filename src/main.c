@@ -17,10 +17,11 @@ int main(int argc, char **argv)
     uint16_t mqtt_port = 0;
     unsigned int yasdi_update_interval = 0;
     DWORD yasdi_driver_id = 0, yasdi_max_device_count = 0;
-    char *yasdi_config = NULL, *mqtt_topic_prefix = NULL, *mqtt_server = NULL, *mqtt_user = NULL, *mqtt_password = NULL;
+    char *yasdi_config = NULL, *mqtt_topic_prefix = NULL, *mqtt_server = NULL, *mqtt_user = NULL, *mqtt_password = NULL,
+         *ssl_cert = NULL;
 
     int opt;
-    while ((opt = getopt(argc, argv, "c:d:i:u:t:s:p:q:U:P:l:")) != -1)
+    while ((opt = getopt(argc, argv, "c:d:i:u:t:s:p:q:U:P:l:S:")) != -1)
     {
         switch (opt)
         {
@@ -57,6 +58,9 @@ int main(int argc, char **argv)
         case 'l':
             log_set_level(strtol(optarg, NULL, 10));
             break;
+        case 'S':
+            ssl_cert = optarg;
+            break;
         case '?':
             return -1;
         }
@@ -72,6 +76,7 @@ int main(int argc, char **argv)
     log_info("Configuration | mqtt_qos_level = %d", mqtt_qos_level);
     log_info("Configuration | mqtt_user = %s", mqtt_user);
     log_info("Configuration | mqtt_password = %s", mqtt_password);
+    log_info("Configuration | ssl_cert = %s", ssl_cert);
 
     if (yasdi_config == NULL || mqtt_topic_prefix == NULL || mqtt_server == NULL || yasdi_max_device_count == 0 || yasdi_update_interval == 0 || mqtt_port == 0)
     {
@@ -80,7 +85,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level))
+    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level, ssl_cert))
     {
         log_fatal("Unable to initialize mqtt_client");
         return -1;
