@@ -9,6 +9,8 @@
 #define MQTT_KEEP_ALIVE_INTERVAL 20
 #define MQTT_DISCONNECT_TIMEOUT 1000
 #define MQTT_RECONNECT_INTERVAL 10
+#define MQTT_SSL_VERSION MQTT_SSL_VERSION_TLS_1_2
+#define MQTT_SSL_SERVER_CERT_AUTH 0
 #define MAX_SERVER_URL_SIZE 128
 #define MAX_TOPIC_NAME_SIZE 128
 
@@ -40,12 +42,9 @@ bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *pa
         log_debug("Setting up ssl for mqtt connection");
 
         MQTTClient_SSLOptions ssl_config = MQTTClient_SSLOptions_initializer;
-        ssl_config.enableServerCertAuth = 0;
         ssl_config.trustStore = ssl_cert;
-
-        // TODO default?
-        // TODO pull out to const
-        //ssl_config.sslVersion = MQTT_SSL_VERSION_TLS_1_2;
+        ssl_config.enableServerCertAuth = MQTT_SSL_SERVER_CERT_AUTH;
+        ssl_config.sslVersion = MQTT_SSL_VERSION;
 
         options.ssl = &ssl_config;
     }

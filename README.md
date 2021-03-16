@@ -9,7 +9,34 @@ If you encounter any problems, please check out the new `Discussions` tab.
 
 ![yasdi2mqtt](.github/assets/mock_console.gif "yasdi2mqtt")
 
-## Hardware Recommendations
+<details>
+<summary>Full Output Example</summary>
+
+`yasdi2mqtt` will publish a json payload via MQTT in the given update interval (channel `$MQTT_TOPIC_PREFIX/<device_sn>`). Messages will be sent for each inverter individually and have the following format:
+```json
+{"sn":000,"time":1586608779,"values": {
+   "Iac":12580,
+   "Uac":239,
+   "Fac":50.019998881965876,
+   "Pac":3006,
+   "Zac":0.17200000816956162,
+   "Riso":10000,
+   "dI":4,
+   "Upv-Ist":416,
+   "PPV":3013,
+   "E-Total":45358.538154414855,
+   "h-Total":47797.772832013434,
+   "h-On":51654.766385075491,
+   "Netz-Ein":9012,
+   "Seriennummer":000,
+   "E-Total DC":45694.108978657052,
+   "Status":"Mpp",
+   "Fehler":"-------"
+}}
+```
+</details>
+
+## Wiring & Hardware
 > TODO
 
 By default YASDI is configured to use directly attached RS485 adapters. Further information on how to set up IP-based hardware instead can be found [here](https://github.com/pkwagner/yasdi2mqtt/issues/1) (German). To prevent permission problems, `yasdi2mqtt` runs as container root in all showcased scenarios. Therefore, consider creating an unprivileged user for production builds.
@@ -107,27 +134,3 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
 * Enable debug output of `yasdi2mqtt` itself (see variable `LOG_LEVEL` in the table below)
 * Replace `YASDI_DEBUG_OUTPUT=0` by `YASDI_DEBUG_OUTPUT=1` in `Dockerfile` to activate `YASDI` debug output
     * When using manual setup method, replace parameter during YASDI install directly
-
-## Output format
-`yasdi2mqtt` will publish a json payload via MQTT in the given update interval (channel `$MQTT_TOPIC_PREFIX/<device_sn>`). Messages will be sent for each inverter individually and have the following format:
-```json
-{"sn":000,"time":1586608779,"values": {
-   "Iac":12580,
-   "Uac":239,
-   "Fac":50.019998881965876,
-   "Pac":3006,
-   "Zac":0.17200000816956162,
-   "Riso":10000,
-   "dI":4,
-   "Upv-Ist":416,
-   "PPV":3013,
-   "E-Total":45358.538154414855,
-   "h-Total":47797.772832013434,
-   "h-On":51654.766385075491,
-   "Netz-Ein":9012,
-   "Seriennummer":000,
-   "E-Total DC":45694.108978657052,
-   "Status":"Mpp",
-   "Fehler":"-------"
-}}
-```
