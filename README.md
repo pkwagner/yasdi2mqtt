@@ -37,9 +37,9 @@ If you encounter any problems, please check out the new `Discussions` tab.
 </details>
 
 ## Wiring & Hardware
-> TODO
-
 By default YASDI is configured to use directly attached RS485 adapters. Further information on how to set up IP-based hardware instead can be found [here](https://github.com/pkwagner/yasdi2mqtt/issues/1) (German). To prevent permission problems, `yasdi2mqtt` runs as container root in all showcased scenarios. Therefore, consider creating an unprivileged user for production builds.
+
+> TODO
 
 ## Setup & Run
 ### Choice I: docker-compose
