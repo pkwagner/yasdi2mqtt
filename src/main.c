@@ -25,11 +25,13 @@ int main(int argc, char **argv)
     char *mqtt_password = getenv("MQTT_PASSWORD");
 
     int mqtt_qos_level = 2;
-    if (getenv("MQTT_QOS_LEVEL")) {
+    if (getenv("MQTT_QOS_LEVEL"))
+    {
         mqtt_qos_level = strtol(getenv("MQTT_QOS_LEVEL"), NULL, 10);
     }
 
-    if (getenv("LOG_LEVEL")) {
+    if (getenv("LOG_LEVEL"))
+    {
         log_set_level(strtol(getenv("LOG_LEVEL"), NULL, 10));
     }
 
@@ -44,7 +46,6 @@ int main(int argc, char **argv)
     log_info("Configuration | MQTT_QOS_LEVEL = %d", mqtt_qos_level);
     log_info("Configuration | MQTT_USER = %s", mqtt_user);
     log_info("Configuration | MQTT_PASSWORD = %s", mqtt_password);
-
 
     if (!mqtt_init(mqtt_server, mqtt_port, mqtt_ssl_cert, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level))
     {
@@ -64,12 +65,14 @@ int main(int argc, char **argv)
     return 0;
 }
 
-char *get_required_env(const char *name) {
-    if (!getenv(name)) {
+char *get_required_env(const char *name)
+{
+    if (!getenv(name))
+    {
         log_fatal("Mandatory environment variable %s missing", name);
         exit(-1);
     }
-    
+
     return getenv(name);
 }
 

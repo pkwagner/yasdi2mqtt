@@ -10,7 +10,6 @@
 #define MQTT_DISCONNECT_TIMEOUT 1000
 #define MQTT_RECONNECT_INTERVAL 10
 #define MQTT_SSL_VERSION MQTT_SSL_VERSION_TLS_1_2
-#define MQTT_SSL_SERVER_CERT_AUTH 0
 #define MAX_SERVER_URL_SIZE 128
 #define MAX_TOPIC_NAME_SIZE 128
 
@@ -33,17 +32,18 @@ bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *pa
     options.keepAliveInterval = MQTT_KEEP_ALIVE_INTERVAL;
     options.cleansession = false;
 
-    if (user != NULL && password != NULL) {
+    if (user != NULL && password != NULL)
+    {
         options.username = user;
         options.password = password;
     }
 
-    if (ssl_cert != NULL) {
+    if (ssl_cert != NULL)
+    {
         log_debug("Setting up ssl for mqtt connection");
 
         MQTTClient_SSLOptions ssl_config = MQTTClient_SSLOptions_initializer;
         ssl_config.trustStore = ssl_cert;
-        ssl_config.enableServerCertAuth = MQTT_SSL_SERVER_CERT_AUTH;
         ssl_config.sslVersion = MQTT_SSL_VERSION;
 
         options.ssl = &ssl_config;
@@ -58,13 +58,15 @@ bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *pa
     sprintf(url, "%s://%s:%u", options.ssl ? "ssl" : "tcp", server, port);
 
     status = MQTTClient_create(&client, url, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
-    if (status != MQTTCLIENT_SUCCESS) {
+    if (status != MQTTCLIENT_SUCCESS)
+    {
         log_fatal("Error while creating MQTTClient instance: %d", status);
         return false;
     }
 
     status = MQTTClient_setCallbacks(client, NULL, mqtt_conn_lost_cb, mqtt_msg_arrived_cb, NULL);
-    if (status != MQTTCLIENT_SUCCESS) {
+    if (status != MQTTCLIENT_SUCCESS)
+    {
         log_fatal("Error while setting MQTTClient callbacks: %d", status);
         return false;
     }
