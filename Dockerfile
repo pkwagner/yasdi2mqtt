@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y git gcc make cmake openssl libssl-dev l
  && cd yasdi2mqtt && make YASDI_PATH=../yasdi && make YASDI_PATH=../yasdi install && cd .. \
  && rm -rf paho logc yasdi \
  && apt-get purge -y --auto-remove git gcc make cmake libssl-dev libcjson-dev && rm -rf /var/lib/apt/lists/* \
- && mkdir /etc/yasdi2mqtt && cp /yasdi2mqtt/docker-entrypoint.sh /entrypoint.sh
+ && mkdir /etc/yasdi2mqtt
 
-ENTRYPOINT ["/entrypoint.sh"]
+WORKDIR /etc/yasdi2mqtt
+
+ENTRYPOINT ["yasdi2mqtt"]
