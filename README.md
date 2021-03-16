@@ -5,26 +5,32 @@
 
 `yasdi2mqtt` is an MQTT adapter for SMA inverters communicating over serial interface. It fetches spot values from attached devices in a fixed interval and publishes them via MQTT in JSON data format. Moreover, it also works with only a fraction of all inverters being online at the same time.
 
+If you encounter any problems, please check out the new `Discussions` tab.
+
 ![yasdi2mqtt](.github/assets/mock_console.gif "yasdi2mqtt")
 
-## Setup & Run
-There are multiple ways to get `yasdi2mqtt` working. I'd strongly recommend using `docker-compose` or `docker` for setup. If you encounter any problems, feel free to open an issue!
+## Hardware Recommendations
+> TODO
 
 By default YASDI is configured to use directly attached RS485 adapters. Further information on how to set up IP-based hardware instead can be found [here](https://github.com/pkwagner/yasdi2mqtt/issues/1) (German). To prevent permission problems, `yasdi2mqtt` runs as container root in all showcased scenarios. Therefore, consider creating an unprivileged user for production builds.
 
-### Variant I: docker-compose
+## Setup & Run
+### Choice I: docker-compose
 1. Check `yasdi.ini` configuration
     * The included blueprint is meant to be used with serial adapters, but IP-based communication should be possible as well (see YASDI reference)
 2. Create empty `devices` directory
     * YASDI will use this folder as device cache, so you'll save the 1-2 minutes for device data download after second startup
 3. Edit `docker-compose.yml` file
-    * See table below for environmental variables (section `environment`)
+    * See the table below for environment variables (section `environment`)
     * Adjust serial adapter path (section `devices`) if not mapped to `/dev/ttyUSB0` or drop it for IP-based setup
 4. `docker-compose up`
     * After starting up, `yasdi2mqtt` should immediately connect to your MQTT broker
     * Detected devices will be printed to console, the first MQTT message might take 1-2 minutes more because of device data download
 
-### Variant II: docker
+### Choice II: docker
+<details>
+<summary>Docker Setup Instructions</summary>
+
 1. Check `yasdi.ini` configuration
     * The included blueprint is meant to be used with serial adapters, but IP-based communication should be possible as well (see YASDI reference)
 2. Create empty `devices` directory
@@ -46,8 +52,12 @@ docker run \
    -e MQTT_PASSWORD="sEcReT" \
    pkwagner/yasdi2mqtt
 ```
+</details>
 
-### Variant III: Manual setup
+### Choice III: Manual setup
+<details>
+<summary>Manual Setup Instructions (consider using docker-compose or docker instead)</summary>
+
 1. Install [cJSON](https://github.com/DaveGamble/cJSON), other project's dependencies and build toolchain
    1. `sudo apt install git gcc make cmake openssl libssl-dev libcjson1 libcjson-dev` for Ubuntu-based distributions
 2. Clone and install [Paho](https://github.com/eclipse/paho.mqtt.c.git)
@@ -70,19 +80,13 @@ docker run \
     * The included blueprint is meant to be used with serial adapters, but IP-based communication should be possible as well (see YASDI reference)
 7. Create empty `devices` directory
     * YASDI will use this folder as device cache, so you'll save the 1-2 minutes for device data download after second startup
-8. Run `yasdi2mqtt` with required parameters (see `docker-entrypoint.sh` and compare with table below)
+8. Set required environment variables according to the table below
+9. `./yasdi2mqtt`
     * After starting up, `yasdi2mqtt` should immediately connect to your MQTT broker
     * Detected devices will be printed to console, the first MQTT message might take 1-2 minutes more because of device data download
+</details>
 
-### Debugging
-If you stuck during setup, there are a few options you can check to make `yasdi2mqtt` more verbose. When using custom build settings, you always need to compile your own container with `docker build -t yasdi2mqtt .` afterwards.
-* Enable debug output of `yasdi2mqtt` itself (see variable `LOG_LEVEL` in table below)
-* Replace `YASDI_DEBUG_OUTPUT=0` by `YASDI_DEBUG_OUTPUT=1` in `Dockerfile` to activate `YASDI` debug output
-    * When using manual setup method, replace parameter during YASDI install directly
-
-### Environmental variables
-> **Caution:** All configuration params below will be passed to `yasdi2mqtt` as program arguments. Therefore, especially the MQTT credentials will be exposed system-wide via process list. Keep this in mind when securing your MQTT access.
-
+### Environment variables
 | Variable               | Description                                                                                                                                                                   | Example value             |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
 | YASDI_CONFIG           | Path to `yasdi.ini` file <br> *Inside container, shouldn't be changed therefore*                                                                                              | /etc/yasdi2mqtt/yasdi.ini |
@@ -91,12 +95,18 @@ If you stuck during setup, there are a few options you can check to make `yasdi2
 | YASDI_UPDATE_INTERVAL  | Time between value update requests in seconds <br> *Value update itself takes some time, so it shouldn't be lower than 15 from my experience*                                 | 30                        |
 | MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                                                               | solar/inverter            |
 | MQTT_SERVER            |                                                                                                                                                                               | example.com               |
-| MQTT_PORT              |                                                                                                                                                                               | 1883 (8883 if you use SSL)|
+| MQTT_PORT              |                                                                                                                                                                               | 1883                      |
+| MQTT_SSL_CERT          | *Optional*<br><br>Path to `cert.pem` file<br>*If you want to use MQTTS, you have to define the path to the cert here and add the cert to the container (e.g. mount a volume)* | /etc/certs/cert.pem       |
 | MQTT_QOS_LEVEL         | *Optional*<br><br>See [here](http://www.steves-internet-guide.com/understanding-mqtt-qos-levels-part-1/) for explanation.                                                     | 2                         |
 | MQTT_USER              | *Optional*                                                                                                                                                                    | johndoe                   |
 | MQTT_PASSWORD          | *Optional*                                                                                                                                                                    | sEcReT                    |
 | LOG_LEVEL              | *Optional*<br><br>Set `0` to enable debug output                                                                                                                              | 0                         |
-| SSL_CERT               | *Optional*<br><br>Path to `cert.pem` file<br>*If you want to use MQTTS, you have to define the path to the cert here and add the cert to the container (e.g. mount a volume)* | /etc/certs/cert.pem       |
+
+### Debugging
+If you stuck during setup, there are a few options you can check to make `yasdi2mqtt` more verbose. When using custom build settings, you always need to compile your own container with `docker build -t yasdi2mqtt .` afterwards.
+* Enable debug output of `yasdi2mqtt` itself (see variable `LOG_LEVEL` in the table below)
+* Replace `YASDI_DEBUG_OUTPUT=0` by `YASDI_DEBUG_OUTPUT=1` in `Dockerfile` to activate `YASDI` debug output
+    * When using manual setup method, replace parameter during YASDI install directly
 
 ## Output format
 `yasdi2mqtt` will publish a json payload via MQTT in the given update interval (channel `$MQTT_TOPIC_PREFIX/<device_sn>`). Messages will be sent for each inverter individually and have the following format:

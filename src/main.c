@@ -1,91 +1,52 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <getopt.h>
 #include <log.h>
 #include <cjson/cJSON.h>
 #include "yasdi_handler.h"
 #include "mqtt_client.h"
 
+char *get_required_env(const char *name);
 void new_values_cb(struct device_value_t *values);
 
 int main(int argc, char **argv)
 {
     log_set_level(LOG_INFO);
 
+    char *yasdi_config = get_required_env("YASDI_CONFIG");
+    DWORD yasdi_driver_id = strtoul(get_required_env("YASDI_DRIVER_ID"), NULL, 10);
+    DWORD yasdi_max_device_count = strtoul(get_required_env("YASDI_MAX_DEVICE_COUNT"), NULL, 10);
+    unsigned int yasdi_update_interval = strtoul(get_required_env("YASDI_UPDATE_INTERVAL"), NULL, 10);
+    char *mqtt_topic_prefix = get_required_env("MQTT_TOPIC_PREFIX");
+    char *mqtt_server = get_required_env("MQTT_SERVER");
+    uint16_t mqtt_port = strtoul(get_required_env("MQTT_PORT"), NULL, 10);
+    char *mqtt_ssl_cert = getenv("MQTT_SSL_CERT");
+    char *mqtt_user = getenv("MQTT_USER");
+    char *mqtt_password = getenv("MQTT_PASSWORD");
+
     int mqtt_qos_level = 2;
-    uint16_t mqtt_port = 0;
-    unsigned int yasdi_update_interval = 0;
-    DWORD yasdi_driver_id = 0, yasdi_max_device_count = 0;
-    char *yasdi_config = NULL, *mqtt_topic_prefix = NULL, *mqtt_server = NULL, *mqtt_user = NULL, *mqtt_password = NULL,
-         *ssl_cert = NULL;
-
-    int opt;
-    while ((opt = getopt(argc, argv, "c:d:i:u:t:s:p:q:U:P:l:S:")) != -1)
-    {
-        switch (opt)
-        {
-        case 'c':
-            yasdi_config = optarg;
-            break;
-        case 'd':
-            yasdi_driver_id = strtoul(optarg, NULL, 10);
-            break;
-        case 'i':
-            yasdi_max_device_count = strtoul(optarg, NULL, 10);
-            break;
-        case 'u':
-            yasdi_update_interval = strtoul(optarg, NULL, 10);
-            break;
-        case 't':
-            mqtt_topic_prefix = optarg;
-            break;
-        case 's':
-            mqtt_server = optarg;
-            break;
-        case 'p':
-            mqtt_port = strtoul(optarg, NULL, 10);
-            break;
-        case 'q':
-            mqtt_qos_level = strtol(optarg, NULL, 10);
-            break;
-        case 'U':
-            mqtt_user = optarg;
-            break;
-        case 'P':
-            mqtt_password = optarg;
-            break;
-        case 'l':
-            log_set_level(strtol(optarg, NULL, 10));
-            break;
-        case 'S':
-            ssl_cert = optarg;
-            break;
-        case '?':
-            return -1;
-        }
+    if (getenv("MQTT_QOS_LEVEL")) {
+        mqtt_qos_level = strtol(getenv("MQTT_QOS_LEVEL"), NULL, 10);
     }
 
-    log_info("Configuration | yasdi_config = %s", yasdi_config);
-    log_info("Configuration | yasdi_driver_id = %u", yasdi_driver_id);
-    log_info("Configuration | yasdi_max_device_count = %u", yasdi_max_device_count);
-    log_info("Configuration | yasdi_update_interval = %u", yasdi_update_interval);
-    log_info("Configuration | mqtt_topic_prefix = %s", mqtt_topic_prefix);
-    log_info("Configuration | mqtt_server = %s", mqtt_server);
-    log_info("Configuration | mqtt_port = %u", mqtt_port);
-    log_info("Configuration | mqtt_qos_level = %d", mqtt_qos_level);
-    log_info("Configuration | mqtt_user = %s", mqtt_user);
-    log_info("Configuration | mqtt_password = %s", mqtt_password);
-    log_info("Configuration | ssl_cert = %s", ssl_cert);
-
-    if (yasdi_config == NULL || mqtt_topic_prefix == NULL || mqtt_server == NULL || yasdi_max_device_count == 0 || yasdi_update_interval == 0 || mqtt_port == 0)
-    {
-        printf("\nToo few arguments. See README.md for further assistance.\n");
-        printf("Usage: yasdi2mqtt -c <yasdi_config> -d <yasdi_driver_id> -i <yasdi_max_device_count> -u <yasdi_update_interval> -t <mqtt_topic_prefix> -s <mqtt_server> -p <mqtt_port> (-q <mqtt_qos_level>) (-U <mqtt_user>) (-P <mqtt_password>) (-l <log_level>)\n");
-        return -1;
+    if (getenv("LOG_LEVEL")) {
+        log_set_level(strtol(getenv("LOG_LEVEL"), NULL, 10));
     }
 
-    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level, ssl_cert))
+    log_info("Configuration | YASDI_CONFIG = %s", yasdi_config);
+    log_info("Configuration | YASDI_DRIVER_ID = %u", yasdi_driver_id);
+    log_info("Configuration | YASDI_MAX_DEVICE_COUNT = %u", yasdi_max_device_count);
+    log_info("Configuration | YASDI_UPDATE_INTERVAL = %u", yasdi_update_interval);
+    log_info("Configuration | MQTT_TOPIC_PREFIX = %s", mqtt_topic_prefix);
+    log_info("Configuration | MQTT_SERVER = %s", mqtt_server);
+    log_info("Configuration | MQTT_PORT = %u", mqtt_port);
+    log_info("Configuration | MQTT_SSL_CERT = %s", mqtt_ssl_cert);
+    log_info("Configuration | MQTT_QOS_LEVEL = %d", mqtt_qos_level);
+    log_info("Configuration | MQTT_USER = %s", mqtt_user);
+    log_info("Configuration | MQTT_PASSWORD = %s", mqtt_password);
+
+
+    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_ssl_cert, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level))
     {
         log_fatal("Unable to initialize mqtt_client");
         return -1;
@@ -97,11 +58,19 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    // Run value (and device) detection in endless loop, will notify about new values via cb
     yh_new_values_cb = new_values_cb;
     yh_loop();
 
     return 0;
+}
+
+char *get_required_env(const char *name) {
+    if (!getenv(name)) {
+        log_fatal("Mandatory environment variable %s missing", name);
+        exit(-1);
+    }
+    
+    return getenv(name);
 }
 
 void new_values_cb(struct device_value_t *values)

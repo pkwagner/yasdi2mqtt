@@ -21,31 +21,34 @@ bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
 int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message);
 
-bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *topic_prefix, int qos_level,
-               char *ssl_cert)
+bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *password, char *topic_prefix, int qos_level)
 {
     int status;
     topic_pfx = topic_prefix;
     qos_lvl = qos_level;
 
     options = (MQTTClient_connectOptions)MQTTClient_connectOptions_initializer;
-
-    /* SSL */
-    if (ssl_cert != NULL) {
-        log_debug("Setting up SSL config");
-        MQTTClient_SSLOptions sslOptions = MQTTClient_SSLOptions_initializer;
-        options.ssl = &sslOptions;
-        options.ssl->enableServerCertAuth = 0;
-        options.ssl->trustStore = ssl_cert;
-        options.ssl->sslVersion = MQTT_SSL_VERSION_TLS_1_2;
-    }
+    options.keepAliveInterval = MQTT_KEEP_ALIVE_INTERVAL;
+    options.cleansession = false;
 
     if (user != NULL && password != NULL) {
         options.username = user;
         options.password = password;
     }
-    options.keepAliveInterval = MQTT_KEEP_ALIVE_INTERVAL;
-    options.cleansession = false;
+
+    if (ssl_cert != NULL) {
+        log_debug("Setting up ssl for mqtt connection");
+
+        MQTTClient_SSLOptions ssl_config = MQTTClient_SSLOptions_initializer;
+        ssl_config.enableServerCertAuth = 0;
+        ssl_config.trustStore = ssl_cert;
+
+        // TODO default?
+        // TODO pull out to const
+        //ssl_config.sslVersion = MQTT_SSL_VERSION_TLS_1_2;
+
+        options.ssl = &ssl_config;
+    }
 
     char url[MAX_SERVER_URL_SIZE];
     if (strlen(server) >= MAX_SERVER_URL_SIZE - 12)
@@ -53,13 +56,7 @@ bool mqtt_init(char *server, uint16_t port, char *user, char *password, char *to
         log_fatal("MQTT server exceeds maximum length");
         return false;
     }
-
-    if (options.ssl == NULL) {
-        sprintf(url, "tcp://%s:%u", server, port);
-    } else {
-        sprintf(url, "ssl://%s:%u", server, port);
-        log_debug("Using SSL");
-    }
+    sprintf(url, "%s://%s:%u", options.ssl ? "ssl" : "tcp", server, port);
 
     status = MQTTClient_create(&client, url, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     if (status != MQTTCLIENT_SUCCESS) {
