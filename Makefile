@@ -5,7 +5,7 @@ IDIRS=-I$(YASDI_PATH)/libs -I$(YASDI_PATH)/include -I$(YASDI_PATH)/core -I$(YASD
 SRC=src/main.c src/yasdi_handler.c src/mqtt_client.c
 
 CC=gcc
-CFLAGS=-std=c11 $(IDIRS)
+CFLAGS=-std=c11 -O3 $(IDIRS)
 DEPS=-lyasdimaster -llog_c -lcjson -lpaho-mqtt3cs
 
 ifeq ($(DEBUG), 1)
