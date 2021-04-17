@@ -17,6 +17,7 @@ char *topic_pfx;
 int qos_lvl;
 MQTTClient client;
 MQTTClient_connectOptions options;
+MQTTClient_SSLOptions ssl_options;
 
 bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
@@ -42,11 +43,11 @@ bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *pa
     {
         log_debug("Setting up ssl for mqtt connection");
 
-        MQTTClient_SSLOptions ssl_config = MQTTClient_SSLOptions_initializer;
-        ssl_config.trustStore = ssl_cert;
-        ssl_config.sslVersion = MQTT_SSL_VERSION;
+        ssl_options = (MQTTClient_SSLOptions)MQTTClient_SSLOptions_initializer;
+        ssl_options.trustStore = ssl_cert;
+        ssl_options.sslVersion = MQTT_SSL_VERSION;
 
-        options.ssl = &ssl_config;
+        options.ssl = &ssl_options;
     }
 
     char url[MAX_SERVER_URL_SIZE];
