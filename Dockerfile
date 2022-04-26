@@ -8,10 +8,10 @@ RUN apt-get update && apt-get install -y git gcc make cmake openssl libssl-dev l
  && git clone --depth=1 https://github.com/rxi/log.c.git logc \
  && gcc -shared -fPIC -DLOG_USE_COLOR -o /usr/local/lib/liblog_c.so logc/src/log.c && cp logc/src/*.h /usr/local/include \
  && git clone --depth=1 https://github.com/konstantinblaesi/yasdi.git yasdi \
- && mkdir yasdi/projects/generic-cmake/build-gcc && cd yasdi/projects/generic-cmake/build-gcc \
+ && mkdir yasdi/sdk/projects/generic-cmake/build-gcc && cd yasdi/sdk/projects/generic-cmake/build-gcc \
  && cmake -D YASDI_DEBUG_OUTPUT=0 .. && make && make install \
- && cd ../../../.. \
- && cd yasdi2mqtt && make YASDI_PATH=../yasdi && make YASDI_PATH=../yasdi install && cd .. \
+ && cd ../../../../.. \
+ && cd yasdi2mqtt && make YASDI_PATH=../yasdi/sdk && make YASDI_PATH=../yasdi/sdk install && cd .. \
  && rm -rf paho logc yasdi \
  && apt-get purge -y --auto-remove git gcc make cmake libssl-dev libcjson-dev && rm -rf /var/lib/apt/lists/* \
  && mkdir /etc/yasdi2mqtt
