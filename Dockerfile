@@ -3,13 +3,14 @@ FROM alpine:latest AS build
 COPY . /yasdi2mqtt
 
 RUN apk add --no-cache git gcc musl-dev make cmake openssl-dev cjson-dev
-RUN ln -s /usr/include/termios.h /usr/include/termio.h
+RUN ln -s termios.h /usr/include/termio.h
 
+# Prepare DESTDIR for log.c and yasdi2mqtt
 RUN mkdir -p /target/usr/local/lib /target/usr/local/bin
 
 # Install Paho
 RUN git clone --depth=1 https://github.com/eclipse/paho.mqtt.c.git paho
-RUN mkdir paho/build && cd paho/build && cmake -DPAHO_WITH_SSL=TRUE .. && make && make install && make DESTDIR=/target install
+RUN mkdir paho/build && cd paho/build && cmake -DPAHO_WITH_SSL=TRUE .. && make && make DESTDIR=/target install
 
 # Install log.c
 RUN git clone --depth=1 https://github.com/rxi/log.c.git logc
@@ -19,10 +20,11 @@ RUN cp logc/liblog_c.so /usr/local/lib && cp logc/liblog_c.so /target/usr/local/
 
 # Install YASDI
 RUN git clone --depth=1 https://github.com/pkwagner/yasdi.git yasdi
-RUN mkdir yasdi/projects/generic-cmake/build-gcc
-RUN cd yasdi/projects/generic-cmake/build-gcc && cmake -D YASDI_DEBUG_OUTPUT=0 .. && make && make install && make DESTDIR=/target install
+RUN mkdir yasdi/projects/generic-cmake/build
+RUN cd yasdi/projects/generic-cmake/build && cmake -D YASDI_DEBUG_OUTPUT=0 .. && make && make DESTDIR=/target install
 
 # Build yasdi2mqtt
+ENV LIBRARY_PATH="/target/usr/local/lib:${LIBRARY_PATH}" LD_LIBRARY_PATH="/target/usr/local/lib:${LD_LIBRARY_PATH}" C_INCLUDE_PATH="/target/usr/local/include:${C_INCLUDE_PATH}"
 RUN cd yasdi2mqtt && make YASDI_PATH=../yasdi && make YASDI_PATH=../yasdi DESTDIR=/target/usr/local/bin install
 
 
