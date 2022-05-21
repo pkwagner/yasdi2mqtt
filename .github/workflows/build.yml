@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     env:
       DOCKER_IMAGE: pkwagner/yasdi2mqtt
       DOCKER_PLATFORMS: linux/amd64,linux/386,linux/arm/v6,linux/arm/v7,linux/arm64
@@ -31,15 +32,26 @@ jobs:
         if: success()
         run: |
           TAGS="--tag ${DOCKER_IMAGE}:latest"
+          ALPINE_TAGS="--tag ${DOCKER_IMAGE}:alpine"
           if [[ $GITHUB_REF == refs/tags/v* ]]; then
             TAGS="$TAGS --tag ${DOCKER_IMAGE}:stable"
             TAGS="$TAGS --tag ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}"
+            ALPINE_TAGS="$ALPINE_TAGS --tag ${DOCKER_IMAGE}:stable-alpine"
+            ALPINE_TAGS="$ALPINE_TAGS --tag ${DOCKER_IMAGE}:${GITHUB_REF#refs/tags/v}-alpine"
           fi
 
           docker build \
+            --file Dockerfile \
             --platform $DOCKER_PLATFORMS \
             --push \
             $TAGS \
+            .
+
+          docker build \
+            --file Dockerfile.alpine \
+            --platform $DOCKER_PLATFORMS \
+            --push \
+            $ALPINE_TAGS \
             .
       - name: Cleanup
         if: always()

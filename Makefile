@@ -13,7 +13,7 @@ ifeq ($(DEBUG), 1)
 endif
 
 yasdi2mqtt: $(SRC)
-	$(CC) $(CFLAGS) $(DEPS) $(SRC) -o yasdi2mqtt
+	$(CC) -o yasdi2mqtt $(SRC) $(CFLAGS) $(DEPS)
 
 install: yasdi2mqtt
 	cp yasdi2mqtt $(DESTDIR)
