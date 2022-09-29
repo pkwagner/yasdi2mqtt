@@ -1,8 +1,8 @@
 version: "3"
 services:
     yasdi2mqtt:
-        # You may also check out :stable release or `build: "."`, if :latest fails
-        image: "pkwagner/yasdi2mqtt:latest"
+        # You may also check out :latest, :stable or `build: "."`, if :latest fails
+        image: "pkwagner/yasdi2mqtt:alpine"
         volumes:
             - "./devices:/etc/yasdi2mqtt/devices"
             - "./yasdi.ini:/etc/yasdi2mqtt/yasdi.ini:ro"
