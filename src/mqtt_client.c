@@ -22,7 +22,7 @@ bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
 int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message);
 
-bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *password, char *topic_prefix, int qos_level,char *clientid)
+bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *password, char *topic_prefix, int qos_level, char *client_id)
 {
     int status;
     topic_pfx = topic_prefix;
@@ -57,7 +57,7 @@ bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *pa
     }
     sprintf(url, "%s://%s:%u", options.ssl ? "ssl" : "tcp", server, port);
 
-    status = MQTTClient_create(&client, url, clientid, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    status = MQTTClient_create(&client, url, client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     if (status != MQTTCLIENT_SUCCESS)
     {
         log_fatal("Error while creating MQTTClient instance: %d", status);

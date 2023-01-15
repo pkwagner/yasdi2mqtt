@@ -23,7 +23,14 @@ int main(int argc, char **argv)
     char *mqtt_ssl_cert = getenv("MQTT_SSL_CERT");
     char *mqtt_user = getenv("MQTT_USER");
     char *mqtt_password = getenv("MQTT_PASSWORD");
-    char *mqtt_clientid = getenv("MQTT_CLIENTID");
+
+    char *mqtt_client_id;
+    if (getenv("MQTT_CLIENT_ID"))
+    {
+      mqtt_client_id = getenv("MQTT_CLIENT_ID");
+    } else {
+      mqtt_client_id = "yasdi2mqtt";
+    }
 
     int mqtt_qos_level = 2;
     if (getenv("MQTT_QOS_LEVEL"))
@@ -47,9 +54,9 @@ int main(int argc, char **argv)
     log_info("Configuration | MQTT_QOS_LEVEL = %d", mqtt_qos_level);
     log_info("Configuration | MQTT_USER = %s", mqtt_user);
     log_info("Configuration | MQTT_PASSWORD = %s", mqtt_password);
-    log_info("Configuration | MQTT_CLIENTID = %s", mqtt_clientid);
+    log_info("Configuration | MQTT_CLIENT_ID = %s", mqtt_client_id);
 
-    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_ssl_cert, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level, mqtt_clientid))
+    if (!mqtt_init(mqtt_server, mqtt_port, mqtt_ssl_cert, mqtt_user, mqtt_password, mqtt_topic_prefix, mqtt_qos_level, mqtt_client_id))
     {
         log_fatal("Unable to initialize mqtt_client");
         return -1;

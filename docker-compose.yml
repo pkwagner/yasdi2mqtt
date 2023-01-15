@@ -18,4 +18,4 @@ services:
             MQTT_PORT: 1883
             MQTT_USER: "johndoe"
             MQTT_PASSWORD: "sEcReT"
-            MQTT_CLIENTID: "yasdi2mqtt"
+            MQTT_CLIENT_ID: "yasdi2mqtt"
