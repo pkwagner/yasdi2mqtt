@@ -5,7 +5,6 @@
 #include <log.h>
 #include <MQTTClient.h>
 
-#define CLIENT_ID "yasdi2mqtt"
 #define MQTT_KEEP_ALIVE_INTERVAL 20
 #define MQTT_DISCONNECT_TIMEOUT 1000
 #define MQTT_RECONNECT_INTERVAL 10
@@ -23,7 +22,7 @@ bool mqtt_connect();
 void mqtt_conn_lost_cb(void *context, char *cause);
 int mqtt_msg_arrived_cb(void *context, char *topicName, int topicLen, MQTTClient_message *message);
 
-bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *password, char *topic_prefix, int qos_level)
+bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *password, char *topic_prefix, int qos_level, char *client_id)
 {
     int status;
     topic_pfx = topic_prefix;
@@ -58,7 +57,7 @@ bool mqtt_init(char *server, uint16_t port, char *ssl_cert, char *user, char *pa
     }
     sprintf(url, "%s://%s:%u", options.ssl ? "ssl" : "tcp", server, port);
 
-    status = MQTTClient_create(&client, url, CLIENT_ID, MQTTCLIENT_PERSISTENCE_NONE, NULL);
+    status = MQTTClient_create(&client, url, client_id, MQTTCLIENT_PERSISTENCE_NONE, NULL);
     if (status != MQTTCLIENT_SUCCESS)
     {
         log_fatal("Error while creating MQTTClient instance: %d", status);
