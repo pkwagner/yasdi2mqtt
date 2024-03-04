@@ -76,7 +76,6 @@ docker run \
    -v <project_dir>/devices:/etc/yasdi2mqtt/devices \
    -v <project_dir>/yasdi.ini:/etc/yasdi2mqtt/yasdi.ini:ro \
    -e YASDI_CONFIG="/etc/yasdi2mqtt/yasdi.ini" \
-   -e YASDI_DRIVER_ID="0" \
    -e YASDI_MAX_DEVICE_COUNT="1" \
    -e YASDI_UPDATE_INTERVAL="30" \
    -e MQTT_TOPIC_PREFIX="/solar/inverter" \
@@ -122,7 +121,6 @@ docker run \
 | Variable               | Description                                                                                                                                                                   | Example                |
 |------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------|
 | YASDI_CONFIG           | Path to `yasdi.ini` file <br> *Inside container, shouldn't be changed therefore*                                                                                              | /etc/yasdi2mqtt/yasdi.ini |
-| YASDI_DRIVER_ID        | ID of driver declared in `yasdi.ini` to use                                                                                                                                   | 0                         |
 | YASDI_MAX_DEVICE_COUNT | Maximum number of devices being online at the same time                                                                                                                       | 1                         |
 | YASDI_UPDATE_INTERVAL  | Time between value update requests in seconds <br> *Value update itself takes some time, so it shouldn't be lower than 15 from my experience*                                 | 30                        |
 | MQTT_TOPIC_PREFIX      | MQTT messages will later be published to topic `$MQTT_TOPIC_PREFIX/<device_sn>`                                                                                               | solar/inverter            |

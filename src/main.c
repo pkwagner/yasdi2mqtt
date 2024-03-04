@@ -14,7 +14,6 @@ int main(int argc, char **argv)
     log_set_level(LOG_INFO);
 
     char *yasdi_config = get_required_env("YASDI_CONFIG");
-    DWORD yasdi_driver_id = strtoul(get_required_env("YASDI_DRIVER_ID"), NULL, 10);
     DWORD yasdi_max_device_count = strtoul(get_required_env("YASDI_MAX_DEVICE_COUNT"), NULL, 10);
     unsigned int yasdi_update_interval = strtoul(get_required_env("YASDI_UPDATE_INTERVAL"), NULL, 10);
     char *mqtt_topic_prefix = get_required_env("MQTT_TOPIC_PREFIX");
@@ -42,7 +41,6 @@ int main(int argc, char **argv)
     }
 
     log_info("Configuration | YASDI_CONFIG = %s", yasdi_config);
-    log_info("Configuration | YASDI_DRIVER_ID = %u", yasdi_driver_id);
     log_info("Configuration | YASDI_MAX_DEVICE_COUNT = %u", yasdi_max_device_count);
     log_info("Configuration | YASDI_UPDATE_INTERVAL = %u", yasdi_update_interval);
     log_info("Configuration | MQTT_TOPIC_PREFIX = %s", mqtt_topic_prefix);
@@ -60,7 +58,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    if (!yh_init(yasdi_config, yasdi_driver_id, yasdi_max_device_count, yasdi_update_interval))
+    if (!yh_init(yasdi_config, yasdi_max_device_count, yasdi_update_interval))
     {
         log_fatal("Unable to initialize yasdi_handler");
         return -1;

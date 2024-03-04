@@ -31,7 +31,7 @@ void device_detection_cb(TYASDIDetectionSub event, DWORD device);
  * @param device_update_interval seconds to wait between device value updates
  * @return true if initialization succeeded
  */
-bool yh_init(const char *ini_file, DWORD driver_id, DWORD device_count, unsigned int device_update_interval)
+bool yh_init(const char *ini_file, DWORD device_count, unsigned int device_update_interval)
 {
     int status;
     max_device_count = device_count;
