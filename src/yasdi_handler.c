@@ -7,11 +7,13 @@
 #include <log.h>
 #include <libyasdimaster.h>
 
+#define MAX_DRIVER_COUNT 128
 #define MAX_CHANNEL_COUNT 300
 #define MAX_VALUE_STR_SIZE 10
 #define MAX_CHANNEL_NAME_SIZE 20
 
-DWORD driver;
+DWORD driver_count;
+DWORD drivers[MAX_DRIVER_COUNT];
 DWORD max_device_count;
 DWORD *active_devices;
 unsigned int update_interval;
@@ -35,27 +37,38 @@ bool yh_init(const char *ini_file, DWORD driver_id, DWORD device_count, unsigned
     max_device_count = device_count;
     update_interval = device_update_interval;
 
-    DWORD driver_count;
     status = yasdiMasterInitialize(ini_file, &driver_count);
     if (status != 0)
     {
         log_fatal("Error while initializing yasdiMaster: %d", status);
         return false;
     }
-    else if (driver_count <= driver_id)
+
+    if (driver_count > MAX_DRIVER_COUNT)
     {
-        log_fatal("Selected driver id %u does not exist (%u drivers found)", driver_id, driver_count);
-        return false;
+        log_warn("yasdi.ini enables more drivers (%u) than we can support (%u)", driver_count, MAX_DRIVER_COUNT);
+        driver_count = MAX_DRIVER_COUNT;
     }
 
-    DWORD drivers[driver_count];
     yasdiMasterGetDriver(drivers, driver_count);
-    driver = drivers[driver_id];
 
-    if (!yasdiMasterSetDriverOnline(driver))
+    for (int i=0; i < driver_count; ++i)
     {
-        log_fatal("Unable to set driver id %u online", driver);
-        return false;
+        char driver_name[256] = "N/A";
+        if (!yasdiMasterGetDriverName(drivers[i], driver_name, sizeof(driver_name)))
+        {
+            log_error("Unable to get driver name for ID: %u", drivers[i]);
+        }
+
+        if (!yasdiMasterSetDriverOnline(drivers[i]))
+        {
+            log_fatal("Unable to set driver %s (ID: %u) online", driver_name, drivers[i]);
+            return false;
+        }
+        else
+        {
+            log_info("Driver %s (ID: %u) online", driver_name, drivers[i]);
+        }
     }
 
     // Prepare for device detection
@@ -71,7 +84,10 @@ bool yh_init(const char *ini_file, DWORD driver_id, DWORD device_count, unsigned
 void yh_destroy()
 {
     yasdiMasterRemEventListener(device_detection_cb, YASDI_EVENT_DEVICE_DETECTION);
-    yasdiMasterSetDriverOffline(driver);
+    for (int i=0; i < driver_count; ++i)
+    {
+        yasdiMasterSetDriverOffline(drivers[i]);
+    }
     yasdiMasterShutdown();
 
     free(active_devices);
