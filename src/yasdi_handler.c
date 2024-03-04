@@ -57,7 +57,7 @@ bool yh_init(const char *ini_file, DWORD driver_id, DWORD device_count, unsigned
         char driver_name[256] = "N/A";
         if (!yasdiMasterGetDriverName(drivers[i], driver_name, sizeof(driver_name)))
         {
-            log_error("Unable to get driver name for ID: %u", drivers[i]);
+            log_warn("Unable to get driver name for ID: %u", drivers[i]);
         }
 
         if (!yasdiMasterSetDriverOnline(drivers[i]))
