@@ -26,7 +26,6 @@ void device_detection_cb(TYASDIDetectionSub event, DWORD device);
 /**
  * Initializes yasdiMaster, enables the driver and prepares for device detection. Must be called first.
  * @param ini_file               relative location of yasdi.ini file
- * @param driver_id              id of the yasdi.ini driver to use (counts from 0)
  * @param device_countmaximum    amount of devices that might be connected at the same time
  * @param device_update_interval seconds to wait between device value updates
  * @return true if initialization succeeded
