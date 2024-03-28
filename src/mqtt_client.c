@@ -1,8 +1,8 @@
 #include "mqtt_client.h"
+#include "log.h"
 
 #include <unistd.h>
 #include <string.h>
-#include <log.h>
 #include <MQTTClient.h>
 
 #define MQTT_KEEP_ALIVE_INTERVAL 20

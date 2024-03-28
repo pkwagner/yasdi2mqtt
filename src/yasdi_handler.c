@@ -1,10 +1,10 @@
 #include "yasdi_handler.h"
+#include "log.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
-#include <log.h>
 #include <libyasdimaster.h>
 
 #define MAX_DRIVER_COUNT 128

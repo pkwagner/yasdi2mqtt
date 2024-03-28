@@ -5,16 +5,12 @@ COPY . /yasdi2mqtt
 RUN apk add --no-cache git gcc musl-dev make cmake openssl-dev cjson-dev
 RUN ln -s termios.h /usr/include/termio.h
 
-# Prepare DESTDIR for log.c and yasdi2mqtt
-RUN mkdir -p /target/usr/local/lib /target/usr/local/bin
+# Prepare DESTDIR for yasdi2mqtt
+RUN mkdir -p /target/usr/local/bin
 
 # Install Paho
 RUN git clone --depth=1 https://github.com/eclipse/paho.mqtt.c.git paho
 RUN mkdir paho/build && cd paho/build && cmake -DPAHO_WITH_SSL=TRUE .. && make && make DESTDIR=/target install
-
-# Install log.c
-RUN git clone --depth=1 https://github.com/rxi/log.c.git logc
-RUN cd logc && gcc -shared -fPIC -DLOG_USE_COLOR -o /target/usr/local/lib/liblog_c.so src/log.c && cp src/*.h /target/usr/local/include
 
 # Install YASDI
 RUN git clone --depth=1 https://github.com/pkwagner/yasdi.git yasdi

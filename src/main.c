@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include <log.h>
 #include <cjson/cJSON.h>
 #include "yasdi_handler.h"
 #include "mqtt_client.h"
+#include "log.h"
 
 char *get_required_env(const char *name);
 void new_values_cb(struct device_value_t *values);

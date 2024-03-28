@@ -93,26 +93,22 @@ docker run \
 
 1. Install [cJSON](https://github.com/DaveGamble/cJSON), [Paho](https://github.com/eclipse/paho.mqtt.c.git), and other project dependencies
    1. `sudo apt install git gcc make cmake openssl libssl-dev libcjson1 libcjson-dev libpaho-mqtt1.3 libpaho-mqtt-dev` (assuming an Ubuntu-based OS)
-2. Clone and install [log.c](https://github.com/rxi/log.c.git)
-    1. `gcc -shared -fPIC -DLOG_USE_COLOR -o liblog_c.so src/log.c`
-    2. `sudo cp liblog_c.so /usr/local/lib` for system-wide installation
-    3. `sudo cp src/*.h /usr/local/include` to make the headers available system-wide
-3. Clone and install [YASDI](https://github.com/konstantinblaesi/yasdi.git)
+2. Clone and install [YASDI](https://github.com/konstantinblaesi/yasdi.git)
     1. `mkdir projects/generic-cmake/build-gcc`
     2. `cd projects/generic-cmake/build-gcc`
     3. `cmake -D YASDI_DEBUG_OUTPUT=0 ..`
     4. `make`
     5. `sudo make install`
-4. Clone and install this repository
+3. Clone and install this repository
     1. `make YASDI_PATH=<yasdi_dir>`
     2. `sudo make YASDI_PATH=<yasdi_dir> install`
-5. Check `yasdi.ini` configuration
+4. Check `yasdi.ini` configuration
     * The included blueprint is pre-configured for directly attached RS485 adapters, but you may want to adjust the serial adapter path.
     * If you want to use IP-based communication instead, you should have a look on the `yasdi` manual or check out [this discussion](https://github.com/pkwagner/yasdi2mqtt/issues/1) (German).
-6. Create empty `devices` directory
+5. Create empty `devices` directory
     * Not necessary, but `yasdi` will use this folder as device data cache, so you'll save 1-2 minutes for device data download after the first startup.
-7. Set environment variables according to the table below
-8. `./yasdi2mqtt`
+6. Set environment variables according to the table below
+7. `./yasdi2mqtt`
     * After starting up, `yasdi2mqtt` should immediately connect to your MQTT broker.
     * Detected devices should be printed on `stdout` quite quickly, but the the initial device data download may delay the first data for 1-2 minutes.
 </details>
@@ -146,3 +142,6 @@ There are two options to make `yasdi2mqtt` more verbose:
 * Replace `YASDI_DEBUG_OUTPUT=0` by `YASDI_DEBUG_OUTPUT=1` in the `Dockerfile` to activate the debug output of the underlying `yasdi` library.
     * You'll need to re-compile your own container using `docker build -t yasdi2mqtt .` and change the `docker-compose.yml` file to use your own container.
     * When doing a manual setup, replace the parameter directly when installing `yasdi`.
+
+## License
+Unless otherwise stated in the file header, all contributions to this project are licensed under the MIT license. In particular, `src/log.c` and `src/log.h` are NOT part of this project.
