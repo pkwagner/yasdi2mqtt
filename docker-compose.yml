@@ -10,7 +10,6 @@ services:
             - "/dev/ttyUSB0:/dev/ttyUSB0"
         environment:
             YASDI_CONFIG: "/etc/yasdi2mqtt/yasdi.ini"
-            YASDI_DRIVER_ID: 0
             YASDI_MAX_DEVICE_COUNT: 1
             YASDI_UPDATE_INTERVAL: 30
             MQTT_TOPIC_PREFIX: "solar/inverter"
