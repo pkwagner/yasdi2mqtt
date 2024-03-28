@@ -1,0 +1,43 @@
+name: yasdi2mqtt
+version: "1.2"
+slug: yasdi2mqtt
+description: Yasdi2mqtt
+url: https://github.com/pkwagner/yasdi2mqtt
+arch:
+- armhf
+- armv7
+- aarch64
+- amd64
+- i386
+startup: application
+panel_icon: mdi:solar-power
+boot: auto
+legacy: true
+stage: experimental
+ingress: false
+init: false
+image: pkwagner/yasdi2mqtt
+options:
+  YASDI_CONFIG: "/config/yasdi.ini"
+  YASDI_DRIVER_ID: 0
+  YASDI_MAX_DEVICE_COUNT: 1
+  YASDI_UPDATE_INTERVAL: 30
+  MQTT_TOPIC_PREFIX: "solar/inverter"
+  MQTT_SERVER: "example.com"
+  MQTT_PORT: 1883
+  MQTT_USER: "johndoe"
+  MQTT_PASSWORD: "sEcReT"
+schema:
+  YASDI_CONFIG: "str"
+  YASDI_DRIVER_ID: "int"
+  YASDI_MAX_DEVICE_COUNT: "int"
+  YASDI_UPDATE_INTERVAL: "int"
+  MQTT_TOPIC_PREFIX: "str"
+  MQTT_SERVER: "str"
+  MQTT_PORT: "int"
+  MQTT_USER: "str"
+  MQTT_PASSWORD: "str"
+host_network: true
+map:
+- config:ro
+uart: true
