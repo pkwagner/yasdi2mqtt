@@ -35,7 +35,28 @@
 </details>
 
 ## Wiring & Hardware
-> Work in progress. If you have time to describe the hardware setup, feel free to contribute :)
+Most of SunnyBoy (not sure for Sunny Island) has an internal connector for `RS485` like this:
+
+<img width="521" alt="image" src="https://github.com/stich86/yasdi2mqtt/assets/27808541/847f35a1-0bf5-472a-9619-d425def81be3">
+
+Usually `D+\D-` are also referred as `A+\B-`, so in case your adapter has `A+\B-` schema, just follow this table:
+
+| PIN | D Schema | A/B Schema |
+|-----|----------|------------|
+| 2   | D+       | A+         |
+| 7   | D-       | B-         |
+| 5   | GND      | GND        |
+
+### RS485-over-IP
+
+If you are using [Hi-Flying adapters](http://www.hi-flying.com/) like *EW-11, PW11, PW21 or others*, setup *Serial Port* like this:
+
+<img width="1886" alt="image" src="https://github.com/stich86/yasdi2mqtt/assets/27808541/1603d866-72ad-46bb-95ef-3931e8bdff24">
+
+while *Communication Settings* in this way:
+
+<img width="1890" alt="image" src="https://github.com/stich86/yasdi2mqtt/assets/27808541/b264d945-487d-4d4a-9411-5e3a2fbfea9d">
+
 
 ## Setup & Run
 Using the `:alpine` or `:latest` images from [Docker Hub](https://hub.docker.com/r/pkwagner/yasdi2mqtt), you'll get a fresh build every month. Therefore, I'd strongly encourage you choosing a container-based choice from below and taking care of updating the images regularly.
@@ -111,6 +132,111 @@ docker run \
 7. `./yasdi2mqtt`
     * After starting up, `yasdi2mqtt` should immediately connect to your MQTT broker.
     * Detected devices should be printed on `stdout` quite quickly, but the the initial device data download may delay the first data for 1-2 minutes.
+</details>
+
+
+### Choice IV: Home Assistant Add-On
+<details>
+<summary>Add this repository as source to your Home Assistant OS</summary>
+
+1. Click here to add this repository to your HA instance
+   
+   [![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fpkwagner%2Fyasdi2mqtt)
+   
+2. Go to **Settings** -> **Add-ons** -> **yasdi2mqtt** and on the **Configuration** tab fills all needed information about your MQTT broker like this:
+   
+<img width="1046" alt="image" src="https://github.com/stich86/yasdi2mqtt/assets/27808541/4ccf697c-9526-46a8-8e2d-4e746c2bcb34">
+
+3. Create `yasdi.ini` file into your `/config` folder using [File editor add-on](https://github.com/home-assistant/addons/blob/master/configurator/README.md) with this content:
+    - If you are connecting using ttyUSB adapter you can use this one as sample:
+      ```
+      [DriverModules]
+      Driver0=yasdi_drv_serial
+
+      # Configs for communiation over Ethernet/UDP
+      # Replace 192.168.178.9 with the real IP address of your device
+
+      [COM1]
+      Device=/dev/ttyUSB0
+      Media=RS485
+      Baudrate=1200
+      Protocol=SMANet
+      ```
+   - If you are connecting using RS485-over-IP you can use this one as sample:
+     ```
+      [DriverModules]
+      Driver0=yasdi_drv_ip
+
+      # Configs for communiation over Ethernet/UDP
+      # Replace 192.168.0.10 with the real IP address of your device, communication is done by UDP ports 24272 and 24273 
+
+      [IP0]
+      Protocol=SMANet
+      Device0=192.168.0.10
+      ```
+
+3. Start the add-on (enable also auto-startup and watch-dog)
+    * You should wait about 1-2 minutes before the inverter's data will be visible.
+
+4. Here are some MQTT sensors example that you can add on your Home Assistant instance (based on SunnyBoy SB3000):
+
+   ```
+   mqtt:
+     sensor:
+     - name: "Total Energy (from installation)"
+       unique_id: "solar_generated_total"
+       device_class: "energy"
+       state_class: "total"
+       unit_of_measurement: "kWh"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['E-Total'] }}"
+     - name: "Total run time (from installation)"
+       unique_id: "solar_hours_total"
+       device_class: "duration"
+       state_class: "total"
+       unit_of_measurement: "h"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['h-Total'] }}"    
+     - name: "Instant Power"
+       unique_id: "solar_power_watt"
+       device_class: "power"
+       state_class: "measurement"
+       unit_of_measurement: "W"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['Pac'] }}"
+     - name: "CC Power"
+       unique_id: "solar_power_cc"
+       device_class: "voltage"
+       state_class: "measurement"
+       unit_of_measurement: "V"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['Upv-Ist'] }}"
+     - name: "AC Power"
+       unique_id: "solar_power_ac"
+       device_class: "voltage"
+       state_class: "measurement"
+       unit_of_measurement: "V"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['Uac'] }}"
+     - name: "AC Frequency"
+       unique_id: "solar_power_ac_freq"
+       device_class: "frequency"
+       state_class: "measurement"
+       unit_of_measurement: "Hz"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['Fac'] }}"
+     - name: "Inverter State"
+       unique_id: "solar_power_state"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['Status'] }}"
+     - name: "Inverter Errors"
+       unique_id: "solar_power_error"
+       state_topic: "sma/inverter/2002284583"
+       value_template: "{{ value_json['values']['Fehler'] }}"
+    ```
+
+For other data details information, you can refer to your Inverter *Installation\User Guide*, for example SunnyBoy [SB4200](https://files.sma.de/downloads/SB4200-12-FE4804.pdf) has description of each value at paragraph *6.4*
+
 </details>
 
 ### Environment variables
