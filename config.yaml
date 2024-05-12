@@ -21,7 +21,7 @@ legacy: true
 stage: experimental
 ingress: false
 init: false
-image: fa2k/yasdi2mqtt
+image: pkwagner/yasdi2mqtt
 options:
   YASDI_CONFIG: "/config/yasdi.ini"
   YASDI_DRIVER_ID: 0
