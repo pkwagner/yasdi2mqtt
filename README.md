@@ -35,7 +35,28 @@
 </details>
 
 ## Wiring & Hardware
-> Work in progress. If you have time to describe the hardware setup, feel free to contribute :)
+Most of SunnyBoy (not sure for Sunny Island) has an internal connector for `RS485` like this:
+
+<img width="521" alt="image" src="https://github.com/stich86/yasdi2mqtt/assets/27808541/847f35a1-0bf5-472a-9619-d425def81be3">
+
+Usually `D+\D-` are also referred as `A+\B-`, so in case your adapter has `A+\B-` schema, just follow this table:
+
+| PIN | D Schema | A/B Schema |
+|-----|----------|------------|
+| 2   | D+       | A+         |
+| 7   | D-       | B-         |
+| 5   | GND      | GND        |
+
+### RS485-over-IP
+
+If you are using [Hi-Flying adapters](http://www.hi-flying.com/) like *EW-11, PW11, PW21 or others*, setup *Serial Port* like this:
+
+<img width="1886" alt="image" src="https://github.com/stich86/yasdi2mqtt/assets/27808541/1603d866-72ad-46bb-95ef-3931e8bdff24">
+
+while *Communication Settings* in this way:
+
+<img width="1890" alt="image" src="https://github.com/stich86/yasdi2mqtt/assets/27808541/b264d945-487d-4d4a-9411-5e3a2fbfea9d">
+
 
 ## Setup & Run
 Using the `:alpine` or `:latest` images from [Docker Hub](https://hub.docker.com/r/pkwagner/yasdi2mqtt), you'll get a fresh build every month. Therefore, I'd strongly encourage you choosing a container-based choice from below and taking care of updating the images regularly.
@@ -147,15 +168,15 @@ docker run \
       Driver0=yasdi_drv_ip
 
       # Configs for communiation over Ethernet/UDP
-      # Replace 192.168.0.10 with the real IP address of your device
+      # Replace 192.168.0.10 with the real IP address of your device, communication is done by UDP ports 24272 and 24273 
 
       [IP0]
       Protocol=SMANet
       Device0=192.168.0.10
       ```
 
-3. Start the add-on (and enable auto-startup and watch-dog)
-    * You should wait about 1-2 minutes before the inverter will be online.
+3. Start the add-on (enable also auto-startup and watch-dog)
+    * You should wait about 1-2 minutes before the inverter's data will be visible.
 
 4. Here are some MQTT sensors example that you can add on your Home Assistant instance (based on SunnyBoy SB3000):
 
@@ -213,6 +234,8 @@ docker run \
        state_topic: "sma/inverter/2002284583"
        value_template: "{{ value_json['values']['Fehler'] }}"
     ```
+
+For other data details information, you can refer to your Inverter *Installation\User Guide*, for example SunnyBoy [SB4200](https://files.sma.de/downloads/SB4200-12-FE4804.pdf) has description of each value at paragraph *6.4*
 
 </details>
 
